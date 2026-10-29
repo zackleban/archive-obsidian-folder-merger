@@ -1,5 +1,7 @@
 # Submission preparation
 
+Latest local checkpoint: [Four-fix quality REVIEW — 2026-10-29](#four-fix-quality-review--2026-10-29). Earlier entries below remain dated history.
+
 Local preparation only. No tag, release, upload, directory submission, or remote change is made by these scripts.
 
 ## Repeatable checks
@@ -213,3 +215,15 @@ The installed Obsidian declarations specify that `registerEvent`/`registerDomEve
 JSDOM supplies one synthetic document for multiple panes. Host inventory/events, `createEl`, `setIcon` and plugin lifecycle delivery are doubles. The actual `MergeModal` constructor and `onClose` run, but the controlled host `Modal.open` records opening without invoking `onOpen`; this suite does not establish modal rendering, focus, keyboard use, merge execution, SVG appearance, cross-window behavior or browser heap collection. Fresh enable means a new candidate instance after candidate unload, not migration/adoption of orphan nodes or unknown handlers left by an already-broken older version. Reload Obsidian when installing updated assets as described in the README.
 
 Still required in the existing isolated live test environment, on minimum 1.8.7 and current stable: click the explorer button after pane detach/reattach and toolbar recreation, keep a second pane working, move explorers to/from popouts, disable with connected/detached panes, then enable fresh and verify exactly one functional button per supported toolbar. Confirm command/context entry points, modal close, light/dark appearance and keyboard controls. The earlier live Folder/Notes recovery, actual link targets/backlinks and platform gates in this record remain blocked/unverified. No community approval, push, tag, release, submission or personal-vault installation is claimed.
+
+## Four-fix quality REVIEW — 2026-10-29
+
+agent decision 2026-10-28: accept this bounded local REVIEW only after independent source/contract review and fresh checks; preserve live/community gates because synthetic hosts and local packaging cannot establish them.
+
+Reviewed current connected toolbar inventory, direct-parent and callback ownership, stale clicks before layout, explicit listener/node removal, independent panes and fresh enable. Unchanged merge/recovery/report behavior remains consistent with its existing evidence. No new defect found. The 16 JSDOM ownership tests use a controlled modal-open boundary, not visible modal rendering or live recovery.
+
+Fresh `npm run qa` passed **34/34 tests**, TypeScript, production build and package checks. No lint command is configured in this repository. This QA ran once for this REVIEW; standalone results across all seven are **382 tests**, plus **12 shared cases**. The preceding 365-plus-12 figure was an arithmetic intake expectation; the 17 new graph cases account for the difference.
+
+README installation/development requirements, manifest/package/lock/root-lock/version-map agreement, licenses/notices, dependency classification and production artifacts were checked against actual configuration. Current official [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin%20guidelines), [developer policies](https://docs.obsidian.md/community-directory/developer-policies), [submission requirements](https://docs.obsidian.md/community-directory/submission-requirements-for-plugins), [manifest schema](https://docs.obsidian.md/Reference/Manifest) and [submission instructions](https://docs.obsidian.md/Plugins/Releasing/Submit%20your%20plugin) were rechecked. Declared minimums remain unverified runtime gates; local consistency is not hosted-scanner or community approval.
+
+Existing live checklists and recovery protocols above remain their sole homes; no app-access retry, personal-vault installation, push, tag, release or submission occurred. Production assets are byte-identical to the starting candidate.
