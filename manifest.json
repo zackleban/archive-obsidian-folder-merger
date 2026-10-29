@@ -2,8 +2,8 @@
 	"id": "folder-merger",
 	"name": "Folder Merger",
 	"version": "1.0.0",
-	"minAppVersion": "1.7.2",
-	"description": "A purple folder button in the file explorer: tick any folders, name the new one, move it in or out with arrows, keep each as a subfolder or pour in its notes, route single notes by hand, and merge without losing a file.",
+	"minAppVersion": "1.8.7",
+	"description": "Merge folders, resolve duplicate filenames, and route individual files using vault-aware moves.",
 	"author": "Zack",
 	"isDesktopOnly": true
 }

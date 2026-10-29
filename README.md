@@ -19,13 +19,19 @@ the merge window:
 The ⤢ button next to the × makes the window full screen (folders on the left, everything else on the right); it
 remembers your choice.
 
-Nothing is lost. Everything moves with Obsidian's own rename, so links keep working. When two files have the same
+Moves use Obsidian's file manager. Enable **Settings → Files and links → Automatically update internal links** to let Obsidian update links as files move. When two files have the same
 name, both are kept and the second gets a number ("Plan 2.md"); same-named subfolders are merged into one. Only the
 ticked folders that end up empty go to the trash. If a folder with the chosen name is already there, everything goes
 into it.
 
 You can also right-click a folder (or several picked in the explorer) and choose "Merge folders…", or run the
 "Merge folders" command.
+
+## Compatibility and safety
+
+Requires Obsidian **1.8.7 or newer** on desktop. The minimum covers the vault-specific storage APIs used to remember the window size. The explorer button uses Obsidian's file-explorer DOM; the command palette and context menu are alternative entry points.
+
+The destination preview shows where files will go before you press Merge. Duplicate filenames are numbered instead of overwritten. Keep a backup before reorganizing a large vault: a merge is a sequence of moves, not a single undoable transaction. If a move fails, completed moves remain in the displayed destination or the individual route destinations; unmoved files stay where they were. Review both before retrying. Empty folders go through Obsidian's configured trash behavior. Closing the window after starting does not cancel an in-progress merge.
 
 ## Colours
 
@@ -46,6 +52,14 @@ under Settings, Community plugins.
 ## Build
 
 ```
-npm install
-npm run build
+npm ci
+npm run qa
 ```
+
+## Privacy and license
+
+Works locally with vault files. No network requests, telemetry, accounts, or paid features. The window-size preference is stored for this vault. Licensed under [MIT](LICENSE).
+
+## Development and submission
+
+Use Node.js 20 or newer. `npm run qa` type-checks and builds the production bundle, runs merge regression tests against an in-memory vault, and validates metadata, licenses, and authored-source safety. `npm run dev` watches TypeScript changes. See [SUBMISSION.md](SUBMISSION.md) for packaging and the remaining manual smoke checks.
