@@ -45,6 +45,50 @@ function countIn(folder) {
   walk(folder);
   return sum;
 }
+var MergeFailure = class extends Error {
+  constructor(message, destination, completed, failed, files) {
+    super(message);
+    this.destination = destination;
+    this.completed = completed;
+    this.failed = failed;
+    this.files = files;
+    this.name = "MergeFailure";
+  }
+};
+function recoveryReport(error) {
+  const describe = (op) => `${op.kind}: ${op.from}${op.to ? ` \u2192 ${op.to}` : ""}`;
+  return [
+    `Merge stopped: ${error.message}`,
+    `Destination: ${error.destination}`,
+    "This merge is not atomic. Completed moves were not rolled back.",
+    "Completed operations (a folder move includes its contents):",
+    ...error.completed.length ? error.completed.map(describe) : ["None acknowledged."],
+    `Failed operation: ${error.failed ? describe(error.failed) : "unknown"}`,
+    "Source-file inventory at the stop (paths reported by Obsidian, not a disk or content verification):",
+    ...error.files.map(({ from, to }) => to === null ? `UNRESOLVED: ${from}` : to === from ? `UNCHANGED: ${from}` : `MOVED: ${from} \u2192 ${to}`),
+    "Pending work was stopped. Unchanged files may still need moving; files already in the destination may need no move. Empty source folders may still need cleanup.",
+    "A rejected operation may have changed disk state before reporting an error. Inspect the source, destination and external routes, including the failed operation's paths. Resolve any UNRESOLVED entries and preserve a backup before retrying.",
+    "Reopen Merge folders and build a new plan from current paths. Select only remaining source folders, keep their intended Folder/Notes modes, use the same destination, and recreate only routes still needed. Never reselect completed routed files or move completed destination contents again.",
+    "If just one source remains, also select the existing destination; set the name/depth to that destination and leave it in Notes mode. If only empty-folder cleanup remains, inspect those folders and use Obsidian's trash command. No automatic retry or rollback is performed.",
+    "Check actual link destinations after recovery with your internal-link update preference. Copy this report before closing; it is not saved across reloads."
+  ].join("\n\n");
+}
+var MergeProgress = class {
+  constructor(app) {
+    this.app = app;
+    this.completed = [];
+  }
+  async run(operation, action) {
+    this.failed = operation;
+    const value = await action();
+    this.completed.push(operation);
+    this.failed = void 0;
+    return value;
+  }
+  move(item, to) {
+    return this.run({ kind: "move", from: item.path, to }, () => this.app.fileManager.renameFile(item, to));
+  }
+};
 var kindOf = (plan, folder) => plan.kinds.get(folder) ?? "notes";
 var validFolderName = (name) => Boolean(name) && name === name.trim() && !/[\\/:*?"<>|#^[\]\x00-\x1f]/.test(name) && !name.startsWith(".") && !name.endsWith(".") && !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(name);
 function validatePlan(app, picked, plan) {
@@ -75,16 +119,36 @@ async function mergeFolders(app, picked, plan) {
   const sources = [...picked];
   const snapshot = { path: plan.path, kinds: new Map(plan.kinds), routes: new Map(plan.routes) };
   validatePlan(app, sources, snapshot);
+  const originalFiles = /* @__PURE__ */ new Map();
+  const remember = (folder) => {
+    for (const child of folder.children) {
+      if (child instanceof import_obsidian.TFolder) remember(child);
+      else if (child instanceof import_obsidian.TFile) originalFiles.set(child, child.path);
+    }
+  };
+  sources.forEach(remember);
+  const progress = new MergeProgress(app);
   merging.add(app);
   try {
-    return await executeMerge(app, sources, snapshot);
+    return await executeMerge(app, sources, snapshot, progress);
+  } catch (error) {
+    throw new MergeFailure(
+      error instanceof Error ? error.message : String(error),
+      snapshot.path,
+      progress.completed,
+      progress.failed,
+      [...originalFiles].map(([file, from]) => ({
+        from,
+        to: app.vault.getAbstractFileByPath(file.path) === file ? file.path : null
+      }))
+    );
   } finally {
     merging.delete(app);
   }
 }
-async function executeMerge(app, picked, plan) {
+async function executeMerge(app, picked, plan, progress) {
   const result = { moved: 0, renamed: 0, target: picked[0] };
-  for (const [file, to] of plan.routes) if (to) await place(app, file, to, result);
+  for (const [file, to] of plan.routes) if (to) await place(app, file, to, result, progress);
   const existing = app.vault.getAbstractFileByPath(plan.path);
   let sources = [...picked];
   if (existing instanceof import_obsidian.TFolder) {
@@ -93,31 +157,31 @@ async function executeMerge(app, picked, plan) {
   } else {
     const lead = sources.find((s) => kindOf(plan, s) === "notes");
     if (lead) {
-      await app.fileManager.renameFile(lead, plan.path);
+      await progress.move(lead, plan.path);
       result.target = lead;
       sources = sources.filter((s) => s !== lead);
-    } else result.target = await app.vault.createFolder(plan.path);
+    } else result.target = await progress.run({ kind: "create", from: plan.path }, () => app.vault.createFolder(plan.path));
   }
-  for (const [file, to] of plan.routes) if (!to) await place(app, file, result.target, result);
+  for (const [file, to] of plan.routes) if (!to) await place(app, file, result.target, result, progress);
   for (const source of sources) {
-    if (kindOf(plan, source) === "notes") await mergeInto(app, source, result.target, result);
-    else await place(app, source, result.target, result);
+    if (kindOf(plan, source) === "notes") await mergeInto(app, source, result.target, result, progress);
+    else await place(app, source, result.target, result, progress);
   }
   return result;
 }
-async function mergeInto(app, source, target, result) {
+async function mergeInto(app, source, target, result, progress) {
   for (const child of [...source.children]) {
     const there = app.vault.getAbstractFileByPath(join(target, child.name));
-    if (child instanceof import_obsidian.TFolder && there instanceof import_obsidian.TFolder) await mergeInto(app, child, there, result);
-    else await place(app, child, target, result);
+    if (child instanceof import_obsidian.TFolder && there instanceof import_obsidian.TFolder) await mergeInto(app, child, there, result, progress);
+    else await place(app, child, target, result, progress);
   }
-  if (source.children.length === 0) await app.fileManager.trashFile(source);
+  if (source.children.length === 0) await progress.run({ kind: "trash", from: source.path }, () => app.fileManager.trashFile(source));
 }
-async function place(app, item, to, result) {
+async function place(app, item, to, result, progress) {
   if (item.parent === to) return;
   const taken = app.vault.getAbstractFileByPath(join(to, item.name));
+  await progress.move(item, taken ? freeName(app, to, item) : join(to, item.name));
   if (taken) result.renamed++;
-  await app.fileManager.renameFile(item, taken ? freeName(app, to, item) : join(to, item.name));
   result.moved++;
 }
 function freeName(app, target, file) {
@@ -344,7 +408,7 @@ var MergeModal = class extends import_obsidian2.Modal {
       const into = !(there instanceof import_obsidian2.TFolder) ? "into one new folder" : this.picked.includes(there) ? `into ${there.name}` : `into the ${there.name} folder already there`;
       const routed = this.routes.size ? ` ${this.routes.size} routed by hand.` : "";
       this.noteEl.setText(
-        `${files} file${files === 1 ? "" : "s"} from ${this.picked.length} folders go ${into}.${routed} Same names keep both (the second gets a number). Links keep working. Emptied folders go to the trash.`
+        `${files} file${files === 1 ? "" : "s"} from ${this.picked.length} folders go ${into}.${routed} Same names keep both (the second gets a number). Link updates follow your Obsidian preference. Emptied folders go to the trash.`
       );
     }
     this.mergeEl.setText(this.picked.length >= 2 ? `Merge ${this.picked.length} folders` : "Merge");
@@ -417,9 +481,28 @@ var MergeModal = class extends import_obsidian2.Modal {
       this.close();
     } catch (e) {
       console.error("Folder Merger", e);
-      new import_obsidian2.Notice(`Merge stopped: ${e instanceof Error ? e.message : e}. Completed moves remain in ${path} or their chosen route destinations. Check those folders before retrying.`, 12e3);
       this.close();
+      if (e instanceof MergeFailure) new RecoveryModal(this.app, recoveryReport(e)).open();
+      else new import_obsidian2.Notice(`Merge did not start: ${e instanceof Error ? e.message : e}. Reopen the merge window and review the current paths.`, 12e3);
     }
+  }
+};
+var RecoveryModal = class extends import_obsidian2.Modal {
+  constructor(app, report) {
+    super(app);
+    this.report = report;
+  }
+  onOpen() {
+    this.titleEl.setText("Merge stopped \u2014 review before retrying");
+    const report = this.contentEl.createEl("textarea", { cls: "folder-merger-recovery-report" });
+    report.value = this.report;
+    report.readOnly = true;
+    report.rows = 18;
+    report.setAttr("aria-label", "Merge recovery report (select and copy before closing)");
+    this.contentEl.createEl("button", { text: "Close" }).addEventListener("click", () => this.close());
+  }
+  onClose() {
+    this.contentEl.empty();
   }
 };
 function filesIn(folder) {

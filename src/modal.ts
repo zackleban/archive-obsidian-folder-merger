@@ -1,5 +1,5 @@
 import { App, FuzzySuggestModal, Modal, Notice, TFile, TFolder, normalizePath, setIcon } from "obsidian";
-import { Kind, countIn, inside, join, kindOf, mergeFolders, validFolderName } from "./merge";
+import { Kind, MergeFailure, countIn, inside, join, kindOf, mergeFolders, recoveryReport, validFolderName } from "./merge";
 
 const FULL_KEY = "folder-merger-full";
 
@@ -270,7 +270,7 @@ export class MergeModal extends Modal {
 			const routed = this.routes.size ? ` ${this.routes.size} routed by hand.` : "";
 			this.noteEl.setText(
 				`${files} file${files === 1 ? "" : "s"} from ${this.picked.length} folders go ${into}.${routed} ` +
-					"Same names keep both (the second gets a number). Links keep working. Emptied folders go to the trash.",
+					"Same names keep both (the second gets a number). Link updates follow your Obsidian preference. Emptied folders go to the trash.",
 			);
 		}
 		this.mergeEl.setText(this.picked.length >= 2 ? `Merge ${this.picked.length} folders` : "Merge");
@@ -347,10 +347,26 @@ export class MergeModal extends Modal {
 			this.close();
 		} catch (e) {
 			console.error("Folder Merger", e);
-			new Notice(`Merge stopped: ${e instanceof Error ? e.message : e}. Completed moves remain in ${path} or their chosen route destinations. Check those folders before retrying.`, 12000);
 			this.close();
+			if (e instanceof MergeFailure) new RecoveryModal(this.app, recoveryReport(e)).open();
+			else new Notice(`Merge did not start: ${e instanceof Error ? e.message : e}. Reopen the merge window and review the current paths.`, 12000);
 		}
 	}
+}
+
+// Remains open for inspection/copying, unlike a transient failure notice.
+export class RecoveryModal extends Modal {
+	constructor(app: App, private report: string) { super(app); }
+	onOpen() {
+		this.titleEl.setText("Merge stopped — review before retrying");
+		const report = this.contentEl.createEl("textarea", { cls: "folder-merger-recovery-report" });
+		report.value = this.report;
+		report.readOnly = true;
+		report.rows = 18;
+		report.setAttr("aria-label", "Merge recovery report (select and copy before closing)");
+		this.contentEl.createEl("button", { text: "Close" }).addEventListener("click", () => this.close());
+	}
+	onClose() { this.contentEl.empty(); }
 }
 
 function filesIn(folder: TFolder): TFile[] {

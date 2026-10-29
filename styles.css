@@ -361,3 +361,9 @@ button.folder-merger-go:disabled {
 	flex: 1;
 	max-height: none;
 }
+.folder-merger-recovery-report {
+	width: 100%;
+	resize: vertical;
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-small);
+}

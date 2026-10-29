@@ -20,7 +20,8 @@ The ⤢ button next to the × makes the window full screen (folders on the left,
 remembers your choice.
 
 Moves use Obsidian's file manager. Enable **Settings → Files and links → Automatically update internal links** to let Obsidian update links as files move. When two files have the same
-name, both are kept and the second gets a number ("Plan 2.md"); same-named subfolders are merged into one. Only the
+name, both are kept and the second gets a number ("Plan 2.md"). Notes mode merges same-named nested folders;
+Folder mode numbers a kept source folder when its name is taken ("A 2"). Only the
 ticked folders that end up empty go to the trash. If a folder with the chosen name is already there, everything goes
 into it.
 
@@ -29,9 +30,20 @@ You can also right-click a folder (or several picked in the explorer) and choose
 
 ## Compatibility and safety
 
-Requires Obsidian **1.8.7 or newer** on desktop. The minimum covers the vault-specific storage APIs used to remember the window size. The explorer button uses Obsidian's file-explorer DOM; the command palette and context menu are alternative entry points.
+The manifest declares Obsidian **1.8.7 or newer** on desktop. This API floor covers the vault-specific storage APIs used to remember the window size; runtime compatibility on 1.8.7 remains unverified. The explorer button uses Obsidian's file-explorer DOM; the command palette and context menu are alternative entry points.
 
-The destination preview shows where files will go before you press Merge. Duplicate filenames are numbered instead of overwritten. Keep a backup before reorganizing a large vault: a merge is a sequence of moves, not a single undoable transaction. If a move fails, completed moves remain in the displayed destination or the individual route destinations; unmoved files stay where they were. Review both before retrying. Empty folders go through Obsidian's configured trash behavior. Closing the window after starting does not cancel an in-progress merge.
+The destination preview shows intended folders; collision suffixes are assigned as moves run. Keep a backup before reorganizing a large vault: a merge is a sequence of moves, **not an atomic or undoable transaction**. Empty folders go through Obsidian's configured trash behavior. Closing the window after starting does not cancel an in-progress merge.
+
+### If a merge stops
+
+The recovery window lists acknowledged operations, the failed operation, and each original source file's current path as reported by Obsidian. A folder move includes its descendants. Copy the selectable report before closing; it is not saved across reloads. It reports paths, not verified disk contents. A failed host operation can change state before rejecting, so inspect its paths too; resolve any `UNRESOLVED` entry before proceeding.
+
+1. Inspect the sources, destination and external route folders. Preserve their current contents and a backup. Completed moves remain in place; no automatic rollback or retry occurs. A trash failure can leave an empty source folder even after its files have moved.
+2. Reopen Merge folders and select only remaining sources from their **current paths**. Keep the intended Folder/Notes mode and the same destination. Recreate only routes that are still pending; do not reselect completed external routes or move the destination's completed contents again.
+3. If only one source remains, also select the existing destination, leave that destination in Notes mode, and set the name/depth to that exact destination. The destination is retained while the remaining source is processed. If only empty-folder cleanup remains, inspect the folders and use Obsidian's trash command.
+4. Verify contents and actual link destinations after retry. Changed vault contents can produce different numeric suffixes. Link updates depend on Obsidian's preference and runtime behavior.
+
+Automated recovery checks verify exact synthetic contents after successful routes followed by move failures, later nested/file and folder collisions, and nested/source trash failures, followed by fresh plans. These host-double tests do not establish filesystem crash safety, concurrent external-writer safety, or live link updates. **Live Folder/Notes and recovery checks are blocked by app access**, including the declared minimum and installed desktop version. See the [evidence and reproducible live drill](SUBMISSION.md#partial-failure-recovery--2026-10-28).
 
 ## Colours
 
