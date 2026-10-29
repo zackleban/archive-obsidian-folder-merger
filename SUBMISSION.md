@@ -28,3 +28,11 @@ Guidelines reviewed for this preparation:
 - [Submission requirements](https://docs.obsidian.md/community-directory/submission-requirements-for-plugins)
 - [Developer policies](https://docs.obsidian.md/community-directory/developer-policies)
 - [Submit your plugin](https://docs.obsidian.md/Plugins/Releasing/Submit%20your%20plugin)
+
+## Review — 2026-10-28
+
+Agent decision, 2026-10-28: review the seven completed local preparations before adding features, because their shared explorer behavior and remaining host checks need validation.
+
+Fresh `npm run qa` passed: 6 tests, TypeScript, production build, and package checks. The existing plan validation, collision preservation, routing, and merge-lock tests still pass. No merger code changed in this review.
+
+This is automated local evidence, not a live Obsidian or minimum-version certification. The real-app checklist above remains open. Nothing was installed into the personal vault, pushed, released, or submitted.
