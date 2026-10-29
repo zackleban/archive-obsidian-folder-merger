@@ -537,7 +537,7 @@ var BUTTON_CLASS = "folder-merger-button";
 var FolderMergerPlugin = class extends import_obsidian3.Plugin {
   constructor() {
     super(...arguments);
-    this.buttons = /* @__PURE__ */ new Set();
+    this.buttons = /* @__PURE__ */ new Map();
     this.modals = /* @__PURE__ */ new Set();
     this.stopped = false;
   }
@@ -565,8 +565,7 @@ var FolderMergerPlugin = class extends import_obsidian3.Plugin {
   }
   onunload() {
     this.stopped = true;
-    this.buttons.forEach((el) => el.remove());
-    this.buttons.clear();
+    for (const button of this.buttons.keys()) this.removeButton(button);
     this.modals.forEach((modal) => modal.close());
     this.modals.clear();
   }
@@ -581,19 +580,45 @@ var FolderMergerPlugin = class extends import_obsidian3.Plugin {
     this.modals.add(modal);
     modal.open();
   }
+  currentToolbars() {
+    const bars = /* @__PURE__ */ new Set();
+    for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
+      const container = leaf.view.containerEl;
+      if (!container.isConnected) continue;
+      const bar = container.querySelector(".nav-buttons-container");
+      if (bar?.isConnected) bars.add(bar);
+    }
+    return bars;
+  }
+  removeButton(button) {
+    const owner = this.buttons.get(button);
+    if (!owner) return;
+    button.removeEventListener("click", owner.onClick);
+    button.remove();
+    this.buttons.delete(button);
+  }
   addButtons() {
     if (this.stopped) return;
-    for (const button of this.buttons) if (!button.isConnected) this.buttons.delete(button);
-    for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
-      const bar = leaf.view.containerEl.querySelector(".nav-buttons-container");
-      if (!bar || bar.querySelector(`.${BUTTON_CLASS}`)) continue;
+    const bars = this.currentToolbars();
+    const occupied = /* @__PURE__ */ new Set();
+    for (const [button, owner] of this.buttons) {
+      if (!bars.has(owner.bar) || button.parentElement !== owner.bar || occupied.has(owner.bar)) {
+        this.removeButton(button);
+      } else occupied.add(owner.bar);
+    }
+    for (const bar of bars) {
+      if (occupied.has(bar)) continue;
       const button = bar.createEl("button", {
         cls: `clickable-icon nav-action-button ${BUTTON_CLASS}`,
         attr: { "aria-label": "Merge folders" }
       });
+      const onClick = () => {
+        if (this.stopped || this.buttons.get(button)?.onClick !== onClick || button.parentElement !== bar || !this.currentToolbars().has(bar)) return;
+        this.open([]);
+      };
+      this.buttons.set(button, { bar, onClick });
+      button.addEventListener("click", onClick);
       (0, import_obsidian3.setIcon)(button, "folder");
-      this.buttons.add(button);
-      button.addEventListener("click", () => this.open([]));
     }
   }
 };

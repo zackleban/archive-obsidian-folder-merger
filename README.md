@@ -32,6 +32,8 @@ You can also right-click a folder (or several picked in the explorer) and choose
 
 The manifest declares Obsidian **1.8.7 or newer** on desktop. This API floor covers the vault-specific storage APIs used to remember the window size; runtime compatibility on 1.8.7 remains unverified. The explorer button uses Obsidian's file-explorer DOM; the command palette and context menu are alternative entry points.
 
+The button follows current connected explorer toolbars when layout changes are delivered. Retired buttons lose their click handlers and are removed; disabling removes owned buttons and closes owned merge windows. Sixteen actual-source JSDOM tests verify detach/reattach, toolbar replacement, surviving panes, fresh enable and stale callbacks through a controlled modal-open boundary. They establish DOM ownership and click dispatch, not real Obsidian rendering or popout compatibility. See the [local evidence and remaining live checks](SUBMISSION.md#explorer-button-ownership--2026-10-29).
+
 The destination preview shows intended folders; collision suffixes are assigned as moves run. Keep a backup before reorganizing a large vault: a merge is a sequence of moves, **not an atomic or undoable transaction**. Empty folders go through Obsidian's configured trash behavior. Closing the window after starting does not cancel an in-progress merge.
 
 ### If a merge stops
@@ -73,4 +75,4 @@ Works locally with vault files. No network requests, telemetry, accounts, or pai
 
 ## Development and submission
 
-Use Node.js 20 or newer. `npm run qa` type-checks and builds the production bundle, runs merge regression tests against an in-memory vault, and validates metadata, licenses, and authored-source safety. `npm run dev` watches TypeScript changes. See [SUBMISSION.md](SUBMISSION.md) for packaging and the remaining manual smoke checks.
+Use Node.js 20 or newer. `npm run qa` type-checks and builds the production bundle, runs merge/recovery tests against host doubles and explorer lifecycle tests in JSDOM, and validates metadata, licenses, and authored-source safety. JSDOM is development-only and is not included in the plugin bundle. `npm run dev` watches TypeScript changes. See [SUBMISSION.md](SUBMISSION.md) for packaging and the remaining manual smoke checks.

@@ -4,7 +4,7 @@ import { MergeModal } from "./modal";
 const BUTTON_CLASS = "folder-merger-button";
 
 export default class FolderMergerPlugin extends Plugin {
-	private buttons = new Set<HTMLElement>();
+	private buttons = new Map<HTMLElement, { bar: HTMLElement; onClick: () => void }>();
 	private modals = new Set<MergeModal>();
 	private stopped = false;
 	onload() {
@@ -36,8 +36,7 @@ export default class FolderMergerPlugin extends Plugin {
 
 	onunload() {
 		this.stopped = true;
-		this.buttons.forEach((el) => el.remove());
-		this.buttons.clear();
+		for (const button of this.buttons.keys()) this.removeButton(button);
 		this.modals.forEach((modal) => modal.close());
 		this.modals.clear();
 	}
@@ -51,19 +50,49 @@ export default class FolderMergerPlugin extends Plugin {
 		modal.open();
 	}
 
+	private currentToolbars(): Set<HTMLElement> {
+		const bars = new Set<HTMLElement>();
+		for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
+			const container = leaf.view.containerEl;
+			if (!container.isConnected) continue;
+			const bar = container.querySelector<HTMLElement>(".nav-buttons-container");
+			if (bar?.isConnected) bars.add(bar);
+		}
+		return bars;
+	}
+
+	private removeButton(button: HTMLElement) {
+		const owner = this.buttons.get(button);
+		if (!owner) return;
+		button.removeEventListener("click", owner.onClick);
+		button.remove();
+		this.buttons.delete(button);
+	}
+
 	private addButtons() {
 		if (this.stopped) return;
-		for (const button of this.buttons) if (!button.isConnected) this.buttons.delete(button);
-		for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
-			const bar = leaf.view.containerEl.querySelector(".nav-buttons-container");
-			if (!bar || bar.querySelector(`.${BUTTON_CLASS}`)) continue;
+		const bars = this.currentToolbars();
+		const occupied = new Set<HTMLElement>();
+		for (const [button, owner] of this.buttons) {
+			if (!bars.has(owner.bar) || button.parentElement !== owner.bar || occupied.has(owner.bar)) {
+				this.removeButton(button);
+			} else occupied.add(owner.bar);
+		}
+		for (const bar of bars) {
+			if (occupied.has(bar)) continue;
 			const button = bar.createEl("button", {
 				cls: `clickable-icon nav-action-button ${BUTTON_CLASS}`,
 				attr: { "aria-label": "Merge folders" },
 			});
+			const onClick = () => {
+				// A retained callback is inert after retirement, even while this plugin is active.
+				if (this.stopped || this.buttons.get(button)?.onClick !== onClick
+					|| button.parentElement !== bar || !this.currentToolbars().has(bar)) return;
+				this.open([]);
+			};
+			this.buttons.set(button, { bar, onClick });
+			button.addEventListener("click", onClick);
 			setIcon(button, "folder");
-			this.buttons.add(button);
-			button.addEventListener("click", () => this.open([]));
 		}
 	}
 }

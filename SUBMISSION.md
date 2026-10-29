@@ -182,3 +182,34 @@ Rechecked unchanged candidate `a7e6184`: README/install instructions, metadata/l
 Fresh `npm run qa` passes **18/18 tests** (twelve merge and six reporting/UI cases), TypeScript, production build and package checks. Synthetic exact-content preservation and fresh-plan retry remain separate from mutation-before-rejection reporting. The partial-failure section above remains the sole recovery protocol; its live Folder/Notes, link updates, popout/platform and minimum-version gates are still blocked or unverified. No fixture regeneration or app-access retry occurred.
 
 Rechecked current official manifest, submission requirements, developer policies, plugin guidelines and submission instructions linked in this record. Local metadata, licensing and automated checks do not establish directory availability, minimum-version runtime compatibility or community approval. Production assets match the reviewed source and remain byte-identical to this review's starting candidate; `git diff --check` passes. No tests were added because no new implementation defect was reproduced. No app-access retry, installation, push, tag, release or submission occurred.
+
+## Explorer button ownership — 2026-10-29
+
+**Status: local lifecycle candidate verified; live explorer and compatibility gates remain open.**
+
+**agent decision 2026-10-28:** reconcile explicitly owned buttons against connected current explorer toolbars, removing obsolete listeners/nodes before releasing ownership. This repairs the actual-source defect at `d1be49d` without changing merge/recovery behavior. Keep one owner editing and an independent read-only lifecycle reviewer. Use locked development-only JSDOM 26.1.0 for real synthetic DOM attachment, selectors, removal and event dispatch; the existing registration no-ops cannot establish listener release.
+
+`tests/explorer-ownership.test.mjs` was persisted before production edits: the initial 13 cases passed three and failed ten. The final 16-case suite replayed against exported baseline source passes three and fails thirteen (exit 1). In its complete sequence, the detached toolbar keeps one button but the plugin owns zero; reattachment keeps that same unowned node; unload leaves it present. A fresh instance owns zero and clicking the leftover opens zero modals because the old owner is stopped. Candidate passes the same suite: detachment removes the node, reattachment creates a functional owned replacement, unload leaves zero buttons, and fresh enable creates one functional current-owner button.
+
+The sixteen cases check exact node identities and per-toolbar counts, actual click-to-modal opening, explicit native listener removal, retained callback invalidation, unload before/after detached reconciliation, toolbar replacement with the old bar connected elsewhere, a connected pane removed from inventory, independent surviving panes, detached listed panes, missing/later toolbars, duplicate leaves/layout delivery, externally removed/moved buttons, sixty reuse cycles, late layout-ready/layout/click/command callbacks, command/context selections and existing modal-close cleanup. Three cases deliver stale clicks before layout reconciliation after detachment, inventory removal or toolbar replacement. Those clicks are already inert; listener/node removal follows layout reconciliation or unload. Ownership stays bounded to current buttons after reconciliation, with no accumulating per-button plugin-lifetime cleanup registrations.
+
+Focused commands:
+
+```sh
+node --test tests/explorer-ownership.test.mjs
+# Replay the persisted regressions without changing the candidate checkout:
+baseline_dir=$(mktemp -d)
+for file in main.ts modal.ts merge.ts; do
+  git show "d1be49d:src/$file" > "$baseline_dir/$file"
+done
+FOLDER_MERGER_SOURCE="$baseline_dir/main.ts" node --test tests/explorer-ownership.test.mjs
+# Expected: exit 1, three pass and thirteen fail.
+```
+
+Final local validation: **34/34 QA tests** (16 explorer lifecycle, 12 unchanged merge and six unchanged recovery/report cases), TypeScript, production build and package checks pass; `git diff --check` passes. Environment: Node 24.22.0, npm 11.19.1, installed Obsidian declarations 1.14.4. Runtime npm dependencies remain empty; JSDOM is absent from the production bundle. Authored stylesheet, modal/merge source, manifest/version map and previous tests/helpers are unchanged. No fixture generation or app-access retry occurred.
+
+The installed Obsidian declarations specify that `registerEvent`/`registerDomEvent` release on component unload; `onLayoutReady` returns void and may run immediately or later. This implementation releases dynamic button listeners explicitly on retirement and unload, and guards late callbacks. The private explorer toolbar selector remains a live compatibility gate.
+
+JSDOM supplies one synthetic document for multiple panes. Host inventory/events, `createEl`, `setIcon` and plugin lifecycle delivery are doubles. The actual `MergeModal` constructor and `onClose` run, but the controlled host `Modal.open` records opening without invoking `onOpen`; this suite does not establish modal rendering, focus, keyboard use, merge execution, SVG appearance, cross-window behavior or browser heap collection. Fresh enable means a new candidate instance after candidate unload, not migration/adoption of orphan nodes or unknown handlers left by an already-broken older version. Reload Obsidian when installing updated assets as described in the README.
+
+Still required in the existing isolated live test environment, on minimum 1.8.7 and current stable: click the explorer button after pane detach/reattach and toolbar recreation, keep a second pane working, move explorers to/from popouts, disable with connected/detached panes, then enable fresh and verify exactly one functional button per supported toolbar. Confirm command/context entry points, modal close, light/dark appearance and keyboard controls. The earlier live Folder/Notes recovery, actual link targets/backlinks and platform gates in this record remain blocked/unverified. No community approval, push, tag, release, submission or personal-vault installation is claimed.
