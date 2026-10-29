@@ -58,8 +58,7 @@ body {
 
 ## Install by hand
 
-Copy `main.js`, `manifest.json` and `styles.css` into `<your vault>/.obsidian/plugins/folder-merger/`, then turn it on
-under Settings, Community plugins.
+This is a local submission candidate; live compatibility and community acceptance remain unverified. In a disposable test vault, create `<vault>/<config-dir>/plugins/folder-merger/` (the config directory is normally `.obsidian`). Copy `main.js`, `manifest.json` and `styles.css` into it, reload Obsidian, then enable the plugin under **Settings → Community plugins**.
 
 ## Build
 

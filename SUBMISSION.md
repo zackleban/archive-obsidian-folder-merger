@@ -17,7 +17,7 @@ The automated tests use a small Obsidian API double; they do not replace a run i
 
 ## Future packaging (not performed)
 
-The prepared version is `1.0.0`. Keep the version in `manifest.json`, `package.json`, `package-lock.json`, and `versions.json` synchronized. The directory ID is `folder-merger`. Install the three build assets in `.obsidian/plugins/folder-merger/` for manual testing.
+The prepared version is `1.0.0`. Keep the version in `manifest.json`, `package.json`, `package-lock.json`, and `versions.json` synchronized. The directory ID is `folder-merger`. Install the three assets in `<config-dir>/plugins/folder-merger/` for manual testing; the configuration directory is normally `.obsidian`. Reload before enabling.
 
 When separately authorized to publish, confirm the name and ID are still available in the community directory, make the source repository publicly reviewable, and create a release whose tag exactly matches the manifest version (no `v` prefix). Attach `main.js`, `manifest.json`, and `styles.css` as release assets. Keep the README, LICENSE, and versions.json at the repository root. Then follow Obsidian's current submission flow. Directory acceptance is decided by Obsidian's reviewers.
 
@@ -160,3 +160,15 @@ moves/trash still use FileManager. The checklist recommends preference-aware
 trash, and the requirements call for a compatible minimum app version. The
 declared API floor is not a tested compatibility claim. Link updates remain
 preference-dependent; documentation cannot substitute for the blocked live drill.
+
+## Quality review — 2026-10-29
+
+agent decision 2026-10-28: review the four accepted follow-ups before further improvements; retain the established tests and runtime protocols because no new source defect justifies duplicating them.
+
+Fresh `npm run qa` passes **18/18 tests** (12 merge and six report/UI-boundary cases), TypeScript, production build and package checks. Reviewed metadata/lock/version agreement, README, maintained stylesheet and the existing recovery evidence. No concrete implementation or packaging regression was found; production assets remain byte-identical. Manual installation now names the configured directory (normally `.obsidian`), folder creation, reload and local-candidate status.
+
+The partial-failure section above remains the sole detailed recovery protocol. Synthetic preservation/retry and mutation-then-rejection reporting do not establish disk crash safety, real link updates or visible app behavior. All older blocked live gates remain open; no fixture regeneration or app-access retry occurred.
+
+`git diff --check` passes. Nothing was pushed, tagged, released or submitted.
+
+Official manifest, submission requirements, developer policies, plugin guidelines and release instructions were rechecked on 2026-10-29. Local metadata, disclosures and licensing checks do not establish minimum-version runtime compatibility, directory name availability or community approval.
