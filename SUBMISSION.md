@@ -172,3 +172,13 @@ The partial-failure section above remains the sole detailed recovery protocol. S
 `git diff --check` passes. Nothing was pushed, tagged, released or submitted.
 
 Official manifest, submission requirements, developer policies, plugin guidelines and release instructions were rechecked on 2026-10-29. Local metadata, disclosures and licensing checks do not establish minimum-version runtime compatibility, directory name availability or community approval.
+
+## Follow-up quality review — 2026-10-29
+
+agent decision 2026-10-28: retain the accepted implementations and existing fault matrices because independent read-only review found no concrete regression; reconcile evidence and correct documentation against source and locked dependencies.
+
+Rechecked unchanged candidate `a7e6184`: README/install instructions, metadata/lock/version agreement, maintained CSS, MIT license, production configuration and existing recovery evidence agree. No concrete packaging/documentation defect was found. The recovery algorithm and fixtures were preserved.
+
+Fresh `npm run qa` passes **18/18 tests** (twelve merge and six reporting/UI cases), TypeScript, production build and package checks. Synthetic exact-content preservation and fresh-plan retry remain separate from mutation-before-rejection reporting. The partial-failure section above remains the sole recovery protocol; its live Folder/Notes, link updates, popout/platform and minimum-version gates are still blocked or unverified. No fixture regeneration or app-access retry occurred.
+
+Rechecked current official manifest, submission requirements, developer policies, plugin guidelines and submission instructions linked in this record. Local metadata, licensing and automated checks do not establish directory availability, minimum-version runtime compatibility or community approval. Production assets match the reviewed source and remain byte-identical to this review's starting candidate; `git diff --check` passes. No tests were added because no new implementation defect was reproduced. No app-access retry, installation, push, tag, release or submission occurred.
