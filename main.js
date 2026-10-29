@@ -322,25 +322,38 @@ var MergeModal = class extends import_obsidian2.Modal {
   refresh() {
     this.renderPlace();
   }
+  collectFileTotals(root) {
+    const totals = /* @__PURE__ */ new Map();
+    const visit = (folder) => {
+      let files = 0;
+      for (const child of folder.children) files += child instanceof import_obsidian2.TFolder ? visit(child) : 1;
+      totals.set(folder, files);
+      return files;
+    };
+    visit(root);
+    return totals;
+  }
   renderList() {
     const scroll = this.listEl.scrollTop;
     this.listEl.empty();
+    const root = this.app.vault.getRoot();
+    const totals = this.collectFileTotals(root);
     let shown = 0;
     const walk = (dir, level) => {
       const folders = dir.children.filter((c) => c instanceof import_obsidian2.TFolder).sort((a, b) => a.name.localeCompare(b.name, void 0, { numeric: true, sensitivity: "base" }));
       for (const folder of folders) {
         if (!this.query || folder.path.toLowerCase().includes(this.query) || this.picked.includes(folder)) {
-          this.renderRow(folder, this.query ? 0 : level);
+          this.renderRow(folder, this.query ? 0 : level, totals.get(folder));
           shown++;
         }
         walk(folder, level + 1);
       }
     };
-    walk(this.app.vault.getRoot(), 0);
+    walk(root, 0);
     if (!shown) this.listEl.createDiv({ cls: "folder-merger-empty", text: "No folders match." });
     this.listEl.scrollTop = scroll;
   }
-  renderRow(folder, level) {
+  renderRow(folder, level, files) {
     const order = this.picked.indexOf(folder);
     const blocked = order < 0 && this.picked.some((p) => inside(folder, p) || inside(p, folder));
     const row = this.listEl.createEl("label", { cls: "folder-merger-row" });
@@ -357,7 +370,7 @@ var MergeModal = class extends import_obsidian2.Modal {
     if ((this.query || order >= 0) && folder.parent && !folder.parent.isRoot()) {
       label.createSpan({ cls: "folder-merger-parent", text: `  ${folder.parent.path}` });
     }
-    row.createSpan({ cls: "folder-merger-count", text: String(countIn(folder).files) });
+    row.createSpan({ cls: "folder-merger-count", text: String(files) });
     if (order >= 0) {
       const kinds = row.createDiv({ cls: "folder-merger-kind" });
       for (const kind of ["folder", "notes"]) {

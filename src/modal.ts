@@ -176,9 +176,24 @@ export class MergeModal extends Modal {
 		this.renderPlace();
 	}
 
+	private collectFileTotals(root: TFolder): Map<TFolder, number> {
+		const totals = new Map<TFolder, number>();
+		const visit = (folder: TFolder): number => {
+			let files = 0;
+			for (const child of folder.children) files += child instanceof TFolder ? visit(child) : 1;
+			totals.set(folder, files);
+			return files;
+		};
+		visit(root);
+		return totals;
+	}
+
 	private renderList() {
 		const scroll = this.listEl.scrollTop;
 		this.listEl.empty();
+		const root = this.app.vault.getRoot();
+		// Fresh for this render only: rows share subtree work, never a stale inventory.
+		const totals = this.collectFileTotals(root);
 		let shown = 0;
 		const walk = (dir: TFolder, level: number) => {
 			const folders = dir.children
@@ -186,18 +201,18 @@ export class MergeModal extends Modal {
 				.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
 			for (const folder of folders) {
 				if (!this.query || folder.path.toLowerCase().includes(this.query) || this.picked.includes(folder)) {
-					this.renderRow(folder, this.query ? 0 : level);
+					this.renderRow(folder, this.query ? 0 : level, totals.get(folder)!);
 					shown++;
 				}
 				walk(folder, level + 1);
 			}
 		};
-		walk(this.app.vault.getRoot(), 0);
+		walk(root, 0);
 		if (!shown) this.listEl.createDiv({ cls: "folder-merger-empty", text: "No folders match." });
 		this.listEl.scrollTop = scroll;
 	}
 
-	private renderRow(folder: TFolder, level: number) {
+	private renderRow(folder: TFolder, level: number, files: number) {
 		const order = this.picked.indexOf(folder);
 		// A folder inside a ticked one (or holding one) can't be ticked too; it already comes along.
 		const blocked = order < 0 && this.picked.some((p) => inside(folder, p) || inside(p, folder));
@@ -217,7 +232,7 @@ export class MergeModal extends Modal {
 		if ((this.query || order >= 0) && folder.parent && !folder.parent.isRoot()) {
 			label.createSpan({ cls: "folder-merger-parent", text: `  ${folder.parent.path}` });
 		}
-		row.createSpan({ cls: "folder-merger-count", text: String(countIn(folder).files) });
+		row.createSpan({ cls: "folder-merger-count", text: String(files) });
 		if (order >= 0) {
 			// Folder keeps it as a subfolder of the new one; Notes pours what it holds straight in.
 			const kinds = row.createDiv({ cls: "folder-merger-kind" });

@@ -16,6 +16,8 @@ the merge window:
    of the new folder); the x puts it back.
 6. **Merge N folders**.
 
+Folder-row numbers include files of every type in that folder and its descendants. Each list render computes fresh shared subtree totals; additions, removals, renames and moves appear on the next render. These counts are a preview, not a frozen merge inventory. [Local traversal evidence and limits](SUBMISSION.md#shared-subtree-totals--2026-10-29) distinguish counting work from sorting, DOM creation and live responsiveness.
+
 The ⤢ button next to the × makes the window full screen (folders on the left, everything else on the right); it
 remembers your choice.
 

@@ -1,0 +1,42 @@
+✔ chain-64: actual list counts/order/state and repeated render controls (56.323959ms)
+ℹ {"fixture":"chain-64","render":0,"folders":65,"edges":65,"work":{"enumeration":{"reads":65,"visits":65},"totals":{"reads":65,"visits":65},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":320}}
+ℹ {"fixture":"chain-64","render":1,"folders":65,"edges":65,"work":{"enumeration":{"reads":65,"visits":65},"totals":{"reads":65,"visits":65},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":320}}
+✔ chain-64: shared subtree work is linear per fresh list render (29.224792ms)
+✔ chain-128: actual list counts/order/state and repeated render controls (37.488583ms)
+ℹ {"fixture":"chain-128","render":0,"folders":129,"edges":129,"work":{"enumeration":{"reads":129,"visits":129},"totals":{"reads":129,"visits":129},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":640}}
+ℹ {"fixture":"chain-128","render":1,"folders":129,"edges":129,"work":{"enumeration":{"reads":129,"visits":129},"totals":{"reads":129,"visits":129},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":640}}
+✔ chain-128: shared subtree work is linear per fresh list render (35.544083ms)
+✔ chain-256: actual list counts/order/state and repeated render controls (84.022417ms)
+ℹ {"fixture":"chain-256","render":0,"folders":257,"edges":257,"work":{"enumeration":{"reads":257,"visits":257},"totals":{"reads":257,"visits":257},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":1280}}
+ℹ {"fixture":"chain-256","render":1,"folders":257,"edges":257,"work":{"enumeration":{"reads":257,"visits":257},"totals":{"reads":257,"visits":257},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":1280}}
+✔ chain-256: shared subtree work is linear per fresh list render (59.204166ms)
+✔ chain-512: actual list counts/order/state and repeated render controls (117.16025ms)
+ℹ {"fixture":"chain-512","render":0,"folders":513,"edges":513,"work":{"enumeration":{"reads":513,"visits":513},"totals":{"reads":513,"visits":513},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":2560}}
+ℹ {"fixture":"chain-512","render":1,"folders":513,"edges":513,"work":{"enumeration":{"reads":513,"visits":513},"totals":{"reads":513,"visits":513},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":2560}}
+✔ chain-512: shared subtree work is linear per fresh list render (108.826333ms)
+✔ binary-8: actual list counts/order/state and repeated render controls (119.804416ms)
+ℹ {"fixture":"binary-8","render":0,"folders":511,"edges":766,"work":{"enumeration":{"reads":511,"visits":766},"totals":{"reads":511,"visits":766},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":2550}}
+ℹ {"fixture":"binary-8","render":1,"folders":511,"edges":766,"work":{"enumeration":{"reads":511,"visits":766},"totals":{"reads":511,"visits":766},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":2550}}
+✔ binary-8: shared subtree work is linear per fresh list render (109.784666ms)
+✔ wide-512: actual list counts/order/state and repeated render controls (107.649208ms)
+ℹ {"fixture":"wide-512","render":0,"folders":513,"edges":683,"work":{"enumeration":{"reads":513,"visits":683},"totals":{"reads":513,"visits":683},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":2560}}
+ℹ {"fixture":"wide-512","render":1,"folders":513,"edges":683,"work":{"enumeration":{"reads":513,"visits":683},"totals":{"reads":513,"visits":683},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":2560}}
+✔ wide-512: shared subtree work is linear per fresh list render (120.23975ms)
+✔ mixed: actual list counts/order/state and repeated render controls (7.321792ms)
+ℹ {"fixture":"mixed","render":0,"folders":11,"edges":16,"work":{"enumeration":{"reads":11,"visits":16},"totals":{"reads":11,"visits":16},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":50}}
+ℹ {"fixture":"mixed","render":1,"folders":11,"edges":16,"work":{"enumeration":{"reads":11,"visits":16},"totals":{"reads":11,"visits":16},"row":{"reads":0,"visits":0},"preview":{"reads":0,"visits":0},"domElements":50}}
+✔ mixed: shared subtree work is linear per fresh list render (6.492917ms)
+✔ empty root, no matches, and all nonfolder children preserve count semantics (5.617125ms)
+✔ selected/filter/mode callbacks preserve order, blocking, parents and scroll (10.776916ms)
+✔ add/remove/rename/move files and folders refresh totals without historical aggregate ownership (68.635041ms)
+✔ search keeps displayed intent/suggestion; name/depth renders retire suggestions and update counts (8.276417ms)
+ℹ {"action":"name-input","work":{"enumeration":{"reads":5,"visits":7},"totals":{"reads":5,"visits":7},"row":{"reads":0,"visits":0},"preview":{"reads":4,"visits":6},"domElements":25},"note":"preview reads include unchanged routes and selected-folder summary"}
+✔ changing selected and filtered trees retain linear count work at every render boundary (36.057625ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1271.934

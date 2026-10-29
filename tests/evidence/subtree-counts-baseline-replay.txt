@@ -1,0 +1,176 @@
+✔ chain-64: actual list counts/order/state and repeated render controls (60.842291ms)
+ℹ {"fixture":"chain-64","render":0,"folders":65,"edges":65,"work":{"enumeration":{"reads":65,"visits":65},"totals":{"reads":0,"visits":0},"row":{"reads":2080,"visits":2080},"preview":{"reads":0,"visits":0},"domElements":320}}
+ℹ {"fixture":"chain-64","render":1,"folders":65,"edges":65,"work":{"enumeration":{"reads":65,"visits":65},"totals":{"reads":0,"visits":0},"row":{"reads":2080,"visits":2080},"preview":{"reads":0,"visits":0},"domElements":320}}
+✖ chain-64: shared subtree work is linear per fresh list render (22.504041ms)
+✔ chain-128: actual list counts/order/state and repeated render controls (43.348833ms)
+ℹ {"fixture":"chain-128","render":0,"folders":129,"edges":129,"work":{"enumeration":{"reads":129,"visits":129},"totals":{"reads":0,"visits":0},"row":{"reads":8256,"visits":8256},"preview":{"reads":0,"visits":0},"domElements":640}}
+ℹ {"fixture":"chain-128","render":1,"folders":129,"edges":129,"work":{"enumeration":{"reads":129,"visits":129},"totals":{"reads":0,"visits":0},"row":{"reads":8256,"visits":8256},"preview":{"reads":0,"visits":0},"domElements":640}}
+✖ chain-128: shared subtree work is linear per fresh list render (27.544625ms)
+✔ chain-256: actual list counts/order/state and repeated render controls (86.819584ms)
+ℹ {"fixture":"chain-256","render":0,"folders":257,"edges":257,"work":{"enumeration":{"reads":257,"visits":257},"totals":{"reads":0,"visits":0},"row":{"reads":32896,"visits":32896},"preview":{"reads":0,"visits":0},"domElements":1280}}
+ℹ {"fixture":"chain-256","render":1,"folders":257,"edges":257,"work":{"enumeration":{"reads":257,"visits":257},"totals":{"reads":0,"visits":0},"row":{"reads":32896,"visits":32896},"preview":{"reads":0,"visits":0},"domElements":1280}}
+✖ chain-256: shared subtree work is linear per fresh list render (70.826042ms)
+✔ chain-512: actual list counts/order/state and repeated render controls (205.336208ms)
+ℹ {"fixture":"chain-512","render":0,"folders":513,"edges":513,"work":{"enumeration":{"reads":513,"visits":513},"totals":{"reads":0,"visits":0},"row":{"reads":131328,"visits":131328},"preview":{"reads":0,"visits":0},"domElements":2560}}
+ℹ {"fixture":"chain-512","render":1,"folders":513,"edges":513,"work":{"enumeration":{"reads":513,"visits":513},"totals":{"reads":0,"visits":0},"row":{"reads":131328,"visits":131328},"preview":{"reads":0,"visits":0},"domElements":2560}}
+✖ chain-512: shared subtree work is linear per fresh list render (130.161125ms)
+✔ binary-8: actual list counts/order/state and repeated render controls (128.770416ms)
+ℹ {"fixture":"binary-8","render":0,"folders":511,"edges":766,"work":{"enumeration":{"reads":511,"visits":766},"totals":{"reads":0,"visits":0},"row":{"reads":3586,"visits":5124},"preview":{"reads":0,"visits":0},"domElements":2550}}
+ℹ {"fixture":"binary-8","render":1,"folders":511,"edges":766,"work":{"enumeration":{"reads":511,"visits":766},"totals":{"reads":0,"visits":0},"row":{"reads":3586,"visits":5124},"preview":{"reads":0,"visits":0},"domElements":2550}}
+✖ binary-8: shared subtree work is linear per fresh list render (78.560792ms)
+✔ wide-512: actual list counts/order/state and repeated render controls (106.318ms)
+ℹ {"fixture":"wide-512","render":0,"folders":513,"edges":683,"work":{"enumeration":{"reads":513,"visits":683},"totals":{"reads":0,"visits":0},"row":{"reads":512,"visits":171},"preview":{"reads":0,"visits":0},"domElements":2560}}
+ℹ {"fixture":"wide-512","render":1,"folders":513,"edges":683,"work":{"enumeration":{"reads":513,"visits":683},"totals":{"reads":0,"visits":0},"row":{"reads":512,"visits":171},"preview":{"reads":0,"visits":0},"domElements":2560}}
+✖ wide-512: shared subtree work is linear per fresh list render (66.739ms)
+✔ mixed: actual list counts/order/state and repeated render controls (9.8555ms)
+ℹ {"fixture":"mixed","render":0,"folders":11,"edges":16,"work":{"enumeration":{"reads":11,"visits":16},"totals":{"reads":0,"visits":0},"row":{"reads":20,"visits":22},"preview":{"reads":0,"visits":0},"domElements":50}}
+ℹ {"fixture":"mixed","render":1,"folders":11,"edges":16,"work":{"enumeration":{"reads":11,"visits":16},"totals":{"reads":0,"visits":0},"row":{"reads":20,"visits":22},"preview":{"reads":0,"visits":0},"domElements":50}}
+✖ mixed: shared subtree work is linear per fresh list render (9.033583ms)
+✔ empty root, no matches, and all nonfolder children preserve count semantics (8.797125ms)
+✔ selected/filter/mode callbacks preserve order, blocking, parents and scroll (16.169334ms)
+✔ add/remove/rename/move files and folders refresh totals without historical aggregate ownership (75.674625ms)
+✔ search keeps displayed intent/suggestion; name/depth renders retire suggestions and update counts (11.775417ms)
+ℹ {"action":"name-input","work":{"enumeration":{"reads":5,"visits":7},"totals":{"reads":0,"visits":0},"row":{"reads":3,"visits":3},"preview":{"reads":4,"visits":6},"domElements":25},"note":"preview reads include unchanged routes and selected-folder summary"}
+✖ changing selected and filtered trees retain linear count work at every render boundary (7.908375ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 11
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1324.352417
+
+✖ failing tests:
+
+test at tests/subtree-counts.test.mjs:162:3
+✖ chain-64: shared subtree work is linear per fresh list render (22.504041ms)
+  AssertionError [ERR_ASSERTION]: shared count traversal bounded by current folder count
+      at bounded (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:148:3)
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:164:93)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/subtree-counts.test.mjs:162:3
+✖ chain-128: shared subtree work is linear per fresh list render (27.544625ms)
+  AssertionError [ERR_ASSERTION]: shared count traversal bounded by current folder count
+      at bounded (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:148:3)
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:164:93)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/subtree-counts.test.mjs:162:3
+✖ chain-256: shared subtree work is linear per fresh list render (70.826042ms)
+  AssertionError [ERR_ASSERTION]: shared count traversal bounded by current folder count
+      at bounded (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:148:3)
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:164:93)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/subtree-counts.test.mjs:162:3
+✖ chain-512: shared subtree work is linear per fresh list render (130.161125ms)
+  AssertionError [ERR_ASSERTION]: shared count traversal bounded by current folder count
+      at bounded (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:148:3)
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:164:93)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/subtree-counts.test.mjs:162:3
+✖ binary-8: shared subtree work is linear per fresh list render (78.560792ms)
+  AssertionError [ERR_ASSERTION]: shared count traversal bounded by current folder count
+      at bounded (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:148:3)
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:164:93)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/subtree-counts.test.mjs:162:3
+✖ wide-512: shared subtree work is linear per fresh list render (66.739ms)
+  AssertionError [ERR_ASSERTION]: rows must not traverse subtrees
+
+  512 !== 0
+
+      at bounded (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:150:10)
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:164:93)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 512,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/subtree-counts.test.mjs:162:3
+✖ mixed: shared subtree work is linear per fresh list render (9.033583ms)
+  AssertionError [ERR_ASSERTION]: shared count traversal bounded by current folder count
+      at bounded (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:148:3)
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:164:93)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/subtree-counts.test.mjs:232:1
+✖ changing selected and filtered trees retain linear count work at every render boundary (7.908375ms)
+  AssertionError [ERR_ASSERTION]: shared count traversal bounded by current folder count
+      at bounded (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:148:3)
+      at check (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:235:73)
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/subtree-counts.test.mjs:236:3)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

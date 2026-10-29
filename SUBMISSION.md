@@ -1,6 +1,6 @@
 # Submission preparation
 
-Latest local checkpoint: [Content and saved ordering REVIEW — 2026-10-29](#content-and-saved-ordering-review--2026-10-29). Earlier entries below remain dated history.
+Latest local checkpoint: [Shared subtree totals — 2026-10-29](#shared-subtree-totals--2026-10-29). Earlier entries below remain dated history.
 
 Local preparation only. No tag, release, upload, directory submission, or remote change is made by these scripts.
 
@@ -291,3 +291,40 @@ README install/build instructions, manifest/package/lock/root-lock/version-map a
 Current official [plugin guidelines](https://raw.githubusercontent.com/obsidianmd/obsidian-developer-docs/main/en/Plugins/Releasing/Plugin%20guidelines.md), [developer policies](https://docs.obsidian.md/community-directory/developer-policies), [submission requirements](https://docs.obsidian.md/community-directory/submission-requirements-for-plugins), [manifest](https://raw.githubusercontent.com/obsidianmd/obsidian-developer-docs/main/en/Reference/Manifest.md) and [submission instructions](https://raw.githubusercontent.com/obsidianmd/obsidian-developer-docs/main/en/Plugins/Releasing/Submit%20your%20plugin.md) were rechecked. Local metadata/artifact/disclosure consistency is not blanket compliance, minimum-version compatibility, hosted-review success, name/ID availability or community approval.
 
 Existing explorer/modal/WebGL/xterm, popout, mobile where advertised, Linux and minimum/current-version gates remain open as applicable. The three older live sorting/recovery deliverables remain blocked in their original records. No blocked app-access attempt, personal-vault installation, push, tag, release or submission occurred. Working/staged/committed diff checks are part of final acceptance; commits remain local on `agent/2026-10-28`.
+
+
+## Shared subtree totals — 2026-10-29
+
+agent decision 2026-10-28: build one fresh postorder totals map per list render and pass only numeric totals into rows, because overlapping displayed subtrees repeated counting work. Keep the map local to that synchronous render; no event invalidation or historical aggregate owner is introduced. The global `countIn`, merge algorithm, route inventory and selected-folder summary remain unchanged, including the existing rule that every nonfolder child counts as a file.
+
+`tests/subtree-counts.test.mjs` loads actual `MergeModal` through the existing source loader and native JSDOM events with explicit Obsidian host doubles. Before production edits, persisted baseline at `df0fb20` passed 11 controls and failed seven work contracts out of 18. The final 19-case original-source replay passes the same 11 controls and fails eight work contracts. The candidate passes 19/19. Evidence lives in `tests/evidence/subtree-counts-{baseline,baseline-replay,candidate}.txt`.
+
+The measurement region starts immediately before each actual list render (or input/click dispatch) and ends on return. Fixture setup/mutation, test inspection and the independent path-based inventory reference are outside it. Instrumented child-array getters and numeric array accesses count reads and child visits separately in list enumeration, subtree totals, row rendering and the broader preview. Element creation under the folder list is a separate counter. Sorting runs normally; its comparisons and runtime are not measured. A test-only map observer retains maps for ownership assertions; this is not production retention or a garbage-collection measurement.
+
+| Synthetic fixture | Old count reads → new | Old count child visits → new | Enumeration reads / child visits (unchanged) | List elements created (unchanged) |
+| --- | ---: | ---: | ---: | ---: |
+| Chain 64, one deepest file | 2,080 → 65 | 2,080 → 65 | 65 / 65 | 320 |
+| Chain 128 | 8,256 → 129 | 8,256 → 129 | 129 / 129 | 640 |
+| Chain 256 | 32,896 → 257 | 32,896 → 257 | 257 / 257 | 1,280 |
+| Chain 512 | 131,328 → 513 | 131,328 → 513 | 513 / 513 | 2,560 |
+| Binary depth eight, 256 leaf files | 3,586 → 511 | 5,124 → 766 | 511 / 766 | 2,550 |
+| Wide 512, 171 direct files | 512 → 513 | 171 → 683 | 513 / 683 | 2,560 |
+| Mixed depth/types/empty folders | 20 → 11 | 22 → 16 | 11 / 16 | 50 |
+
+Counts include the root in enumeration and in the new totals pass, but the root is not a row. Thus combined chain reads are 2,145/8,385/33,153/131,841 → 130/258/514/1,026; binary reads are 4,097 → 1,022. Every case checks exact displayed counts and row identities/order twice. Wide trees need slightly more count reads and more child visits; a search with no visible rows previously did no row counting, while the new totals pass still traverses the current tree. This bounds overlapping-subtree work; it is not a universal work or latency reduction.
+
+For F current folders including root and E current child entries, subtree counting uses F child-array reads and E child visits, with O(F) transient totals. Enumeration separately uses F reads/E visits; rows perform zero subtree traversal. Numeric/case-insensitive sorting and DOM allocation remain. The existing recursive enumeration and new recursive totals pass do not address native stack overflow or virtualization.
+
+Preservation controls cover empty root/folders, nonfolder semantics, Markdown/images/PDF/audio/extensionless files, direct-plus-descendant files, sibling/shared ancestors, exact numeric/case-insensitive row order, indentation, parent labels, checkbox blocking, selected order, Folder/Notes callbacks, picked-but-nonmatching search rows, empty-search results and scroll restoration. Mutation cycles add/remove/rename/move files and folders, replace equal paths with new objects, and verify current counts/current map keys with no aggregate field retained on the modal. A separate bounded-work case checks every mutation, selected/filter/name/depth/mode render. Search retains the displayed-plan revision and open suggestion; name/depth changes retire suggestions, recapture intent and keep current inventory semantics. The original 104 intent/recovery/merge/button cases remain part of QA.
+
+Commands:
+
+```sh
+node --test tests/subtree-counts.test.mjs
+npm run qa
+git diff --check
+```
+
+For original-source replay, export `src/modal.ts` and `src/merge.ts` from `df0fb20` into a temporary directory and set `FOLDER_MERGER_COUNTS_SOURCE` to that exported `src/modal.ts` while running the focused test. Do not replace checkout source. Final QA: **123 tests**, TypeScript/production build and metadata/source/license/package checks pass. No lint command is configured. A separate in-memory esbuild run with production config byte-matches `main.js`; CSS, manifest/version/dependency metadata and merge/entry-point code are unchanged.
+
+These are synthetic algorithmic and host-double observations, not typical-vault timings, live latency, heap collection, native modal/fuzzy suggestion behavior or minimum/current-version compatibility. The existing manual and blocked recovery/link checks above remain open; desktop-only mobile scope is unchanged. No denied access retry, personal-vault install, publication, tag, release or submission occurred.
