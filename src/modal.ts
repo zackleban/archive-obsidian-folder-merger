@@ -1,5 +1,15 @@
-import { App, FuzzySuggestModal, Modal, Notice, TFile, TFolder, normalizePath, setIcon } from "obsidian";
-import { Kind, MergeFailure, countIn, inside, join, kindOf, mergeFolders, recoveryReport, validFolderName } from "./merge";
+import { App, FuzzyMatch, FuzzySuggestModal, Modal, Notice, TAbstractFile, TFile, TFolder, normalizePath, setIcon } from "obsidian";
+import { Kind, MergeFailure, MergePlan, countIn, inside, join, kindOf, mergeFolders, recoveryReport, validFolderName } from "./merge";
+
+type Location<T extends TAbstractFile = TAbstractFile> = { item: T; path: string };
+interface DisplayedPlan {
+	plan: MergePlan;
+	sources: Location<TFolder>[];
+	parent: Location<TFolder>;
+	existing: TAbstractFile | null;
+	routes: { file: Location<TFile>; to: Location<TFolder> | null }[];
+}
+const location = <T extends TAbstractFile>(item: T): Location<T> => ({ item, path: item.path });
 
 const FULL_KEY = "folder-merger-full";
 
@@ -16,6 +26,11 @@ export class MergeModal extends Modal {
 	// Notes sent somewhere by hand: a folder, or null for the top of the new folder.
 	private routes = new Map<TFile, TFolder | null>();
 	private merging = false;
+	private active = false;
+	private retired = false;
+	private revision = 0;
+	private displayed: DisplayedPlan | null = null;
+	private suggestion: RouteSuggest | null = null;
 
 	private listEl!: HTMLElement;
 	private nameInput!: HTMLInputElement;
@@ -34,6 +49,8 @@ export class MergeModal extends Modal {
 	}
 
 	onOpen() {
+		if (this.retired) return;
+		this.active = true;
 		this.modalEl.addClass("folder-merger-modal");
 		this.titleEl.setText("Merge folders");
 		const { contentEl } = this;
@@ -107,6 +124,11 @@ export class MergeModal extends Modal {
 	}
 
 	onClose() {
+		this.active = false;
+		this.retired = true;
+		this.displayed = null;
+		this.suggestion?.close();
+		this.suggestion = null;
 		this.contentEl.empty();
 	}
 
@@ -151,7 +173,6 @@ export class MergeModal extends Modal {
 	}
 
 	private refresh() {
-		this.renderList();
 		this.renderPlace();
 	}
 
@@ -193,7 +214,7 @@ export class MergeModal extends Modal {
 
 		setIcon(row.createSpan({ cls: "folder-merger-icon" }), "folder");
 		const label = row.createSpan({ cls: "folder-merger-name", text: folder.name });
-		if (this.query && folder.parent && !folder.parent.isRoot()) {
+		if ((this.query || order >= 0) && folder.parent && !folder.parent.isRoot()) {
 			label.createSpan({ cls: "folder-merger-parent", text: `  ${folder.parent.path}` });
 		}
 		row.createSpan({ cls: "folder-merger-count", text: String(countIn(folder).files) });
@@ -237,6 +258,12 @@ export class MergeModal extends Modal {
 	}
 
 	private renderPlace() {
+		if (!this.active || this.merging) return;
+		this.revision++;
+		this.suggestion?.close();
+		this.suggestion = null;
+		// A new preview includes source paths and modes as well as the destination.
+		this.renderList();
 		const chain = this.place();
 		this.topEl.disabled = this.outEl.disabled = this.depth <= 0;
 		this.inEl.disabled = this.depth >= chain.length - 1;
@@ -270,11 +297,18 @@ export class MergeModal extends Modal {
 			const routed = this.routes.size ? ` ${this.routes.size} routed by hand.` : "";
 			this.noteEl.setText(
 				`${files} file${files === 1 ? "" : "s"} from ${this.picked.length} folders go ${into}.${routed} ` +
-					"Same names keep both (the second gets a number). Link updates follow your Obsidian preference. Emptied folders go to the trash.",
+					"File inventory is a preview; current contents move at confirmation. Same names keep both (the second gets a number). Link updates follow your Obsidian preference. Emptied folders go to the trash.",
 			);
 		}
 		this.mergeEl.setText(this.picked.length >= 2 ? `Merge ${this.picked.length} folders` : "Merge");
 		this.mergeEl.disabled = problem !== null;
+		this.displayed = problem ? null : {
+			plan: { path: this.target(), kinds: new Map(this.picked.map(f => [f, kindOf({ kinds: this.kinds }, f)])), routes: new Map(this.routes) },
+			sources: this.picked.map(location),
+			parent: location(chain[Math.min(this.depth, chain.length - 1)]),
+			existing: this.app.vault.getAbstractFileByPath(this.target()),
+			routes: [...this.routes].map(([file, to]) => ({ file: location(file), to: to ? location(to) : null })),
+		};
 	}
 
 	// Every note in the ticked folders, with where it goes. Click the destination to send it somewhere else.
@@ -298,17 +332,28 @@ export class MergeModal extends Modal {
 			const routed = this.routes.has(file);
 			const to = row.createEl("button", { cls: "folder-merger-dest", text: `→ ${this.destination(source, file)}` });
 			to.toggleClass("is-routed", routed);
-			to.addEventListener("click", () =>
-				new RouteSuggest(this.app, this.name.trim() || "the new folder", this.picked, (choice) => {
+			const revision = this.revision;
+			const shownFile = location(file);
+			const current = () => this.active && !this.merging && revision === this.revision;
+			to.addEventListener("click", () => {
+				if (!current()) return;
+				if (!this.intentCurrent() || !this.live(shownFile)) { this.outdated(); return; }
+				this.suggestion?.close();
+				const suggestion = new RouteSuggest(this.app, this.name.trim() || "the new folder", [...this.picked], (choice) => {
+					if (!current() || this.suggestion !== suggestion) return;
+					if (!this.intentCurrent() || !this.live(shownFile)) { this.outdated(); return; }
 					if (choice === undefined) this.routes.delete(file);
 					else this.routes.set(file, choice);
 					this.renderPlace();
-				}).open(),
-			);
+				});
+				this.suggestion = suggestion;
+				suggestion.open();
+			});
 			if (routed) {
 				const reset = row.createEl("button", { cls: "folder-merger-reset clickable-icon", attr: { "aria-label": "Back to where the merge puts it" } });
 				setIcon(reset, "x");
 				reset.addEventListener("click", () => {
+					if (!current()) return;
 					this.routes.delete(file);
 					this.renderPlace();
 				});
@@ -332,12 +377,38 @@ export class MergeModal extends Modal {
 		return folder.isRoot() ? this.app.vault.getName() : folder.name;
 	}
 
+	private live(value: Location): boolean {
+		return value.item.path === value.path && this.app.vault.getAbstractFileByPath(value.path) === value.item;
+	}
+
+	private intentCurrent(): boolean {
+		const shown = this.displayed;
+		if (!shown || this.target() !== shown.plan.path || !this.live(shown.parent)
+			|| this.app.vault.getAbstractFileByPath(shown.plan.path) !== shown.existing
+			|| this.picked.length !== shown.sources.length || this.routes.size !== shown.routes.length) return false;
+		if (shown.sources.some((source, i) => source.item !== this.picked[i] || !this.live(source)
+			|| kindOf({ kinds: this.kinds }, source.item) !== shown.plan.kinds.get(source.item))) return false;
+		return shown.routes.every(({ file, to }) => this.live(file) && this.routes.has(file.item)
+			&& this.routes.get(file.item) === (to?.item ?? null) && (!to || this.live(to)));
+	}
+
+	private outdated() {
+		this.close();
+		new Notice("Merge did not start: the displayed plan is out of date. Reopen the merge window and review the current paths.", 12000);
+	}
+
 	private async merge() {
-		if (this.merging || this.problem()) return;
+		if (!this.active || this.merging) return;
+		// Never re-render/recapture intent as part of the same confirmation action.
+		if (!this.intentCurrent()) { this.outdated(); return; }
+		if (this.problem()) return;
+		const shown = this.displayed!;
 		this.merging = true;
-		const path = this.target();
-		const picked = [...this.picked];
-		const plan = { path, kinds: new Map(this.kinds), routes: new Map(this.routes) };
+		this.active = false;
+		this.suggestion?.close();
+		this.suggestion = null;
+		const picked = shown.sources.map(source => source.item);
+		const plan = shown.plan;
 		this.modalEl.querySelectorAll<HTMLInputElement | HTMLButtonElement>("input, button").forEach((el) => el.disabled = true);
 		this.mergeEl.setText("Merging…");
 		try {
@@ -375,7 +446,11 @@ function filesIn(folder: TFolder): TFile[] {
 
 // Picks where one note goes: back to the merge's choice (undefined), the top of the new folder (null), or any
 // folder outside the ticked ones.
-class RouteSuggest extends FuzzySuggestModal<{ text: string; to: TFolder | null | undefined }> {
+type RouteChoice = { text: string; to: TFolder | null | undefined; path?: string };
+class RouteSuggest extends FuzzySuggestModal<RouteChoice> {
+	private active = false;
+	private retired = false;
+	private offered = new Set<RouteChoice>();
 	constructor(
 		app: App,
 		private newName: string,
@@ -386,24 +461,53 @@ class RouteSuggest extends FuzzySuggestModal<{ text: string; to: TFolder | null 
 		this.setPlaceholder("Send this note to…");
 	}
 
+	onOpen() {
+		if (this.retired) return;
+		this.active = true;
+		super.onOpen();
+	}
+
+	onClose() {
+		this.active = false;
+		this.retired = true;
+		this.offered.clear();
+		super.onClose();
+	}
+
+	// Own the public selection boundary: do not depend on whether the host's
+	// inherited selectSuggestion closes before or after onChooseItem.
+	selectSuggestion(value: FuzzyMatch<RouteChoice>, _evt: MouseEvent | KeyboardEvent) {
+		this.onChooseItem(value.item);
+		this.close();
+	}
+
 	getItems() {
 		const folders = this.app.vault
 			.getAllLoadedFiles()
 			.filter((f): f is TFolder => f instanceof TFolder)
 			.filter((f) => !this.picked.some((p) => f === p || inside(f, p)))
 			.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: "base" }));
-		return [
+		const items: RouteChoice[] = [
 			{ text: "Where the merge puts it", to: undefined },
 			{ text: `Top of ${this.newName} (the new folder)`, to: null },
-			...folders.map((f) => ({ text: f.isRoot() ? `${this.app.vault.getName()} (top of the vault)` : f.path, to: f })),
+			...folders.map((f) => ({ text: f.isRoot() ? `${this.app.vault.getName()} (top of the vault)` : f.path, to: f, path: f.path })),
 		];
+		this.offered = new Set(items);
+		return items;
 	}
 
 	getItemText(item: { text: string }) {
 		return item.text;
 	}
 
-	onChooseItem(item: { to: TFolder | null | undefined }) {
+	onChooseItem(item: RouteChoice) {
+		if (!this.active || !this.offered.has(item)) return;
+		this.active = false;
+		if (item.to && (item.to.path !== item.path || this.app.vault.getAbstractFileByPath(item.path!) !== item.to)) {
+			this.close();
+			new Notice("Route choice is out of date. Choose the destination again.");
+			return;
+		}
 		this.chosen(item.to);
 	}
 }

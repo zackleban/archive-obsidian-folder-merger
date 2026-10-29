@@ -1,6 +1,6 @@
 # Submission preparation
 
-Latest local checkpoint: [Four-fix quality REVIEW — 2026-10-29](#four-fix-quality-review--2026-10-29). Earlier entries below remain dated history.
+Latest local checkpoint: [Displayed plan and prompt lifetime — 2026-10-29](#displayed-plan-and-prompt-lifetime--2026-10-29). Earlier entries below remain dated history.
 
 Local preparation only. No tag, release, upload, directory submission, or remote change is made by these scripts.
 
@@ -227,3 +227,41 @@ Fresh `npm run qa` passed **34/34 tests**, TypeScript, production build and pack
 README installation/development requirements, manifest/package/lock/root-lock/version-map agreement, licenses/notices, dependency classification and production artifacts were checked against actual configuration. Current official [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin%20guidelines), [developer policies](https://docs.obsidian.md/community-directory/developer-policies), [submission requirements](https://docs.obsidian.md/community-directory/submission-requirements-for-plugins), [manifest schema](https://docs.obsidian.md/Reference/Manifest) and [submission instructions](https://docs.obsidian.md/Plugins/Releasing/Submit%20your%20plugin) were rechecked. Declared minimums remain unverified runtime gates; local consistency is not hosted-scanner or community approval.
 
 Existing live checklists and recovery protocols above remain their sole homes; no app-access retry, personal-vault installation, push, tag, release or submission occurred. Production assets are byte-identical to the starting candidate.
+
+## Displayed plan and prompt lifetime — 2026-10-29
+
+**Status: local candidate verified; live modal/explorer/popout/minimum-version and recovery/link gates remain open.**
+
+**agent decision 2026-10-28:** reject and close obsolete displayed intent, requiring a newly reviewed prompt. Capture source identity/full path, per-source Folder/Notes mode, exact destination path, parent identity/path, destination absence or existing identity, and explicit routed file/destination identity/path at preview rendering. Show selected folders' parent paths. Re-rendering by a deliberate choice updates the preview; confirmation itself never recaptures changed intent. Keep current contents rather than freeze file inventory because this is a folder move tool, not a transaction. One editing owner and an independent read-only reviewer; Mac toolchain only.
+
+`src/modal.ts` checks that snapshot synchronously before passing the captured plan to the unchanged `mergeFolders`. It retires each prompt before dispatch and on close/cancel/unload. Per-prompt ownership means closing or consuming one does not retire another. Route rows bind the preview revision and file path; suggestion items bind the offered destination identity/path. Superseded/cancelled suggestions and retained callbacks cannot change the plan. A stale suggestion destination requires a fresh choice. The class owns the public `selectSuggestion` boundary so acceptance precedes its own close; installed Obsidian 1.14.4 declarations expose this method and `FuzzyMatch` without specifying inherited close/choice order. No assumption about that private ordering is needed.
+
+The count/list are explicitly a preview. Un-routed file additions/removals/renames and content edits may change what moves; explicit routed files must retain identity/path, though their content edits are allowed. Existing destination contents may change and current collision suffixes preserve both. Source identity/path and destination existence cannot silently change. Validation is a pre-execution check with no await before dispatch and the merge's initial validation/operation; later operations are asynchronous and not atomic. Changes that occur and are fully restored between checks are not detected. Closing/unloading after execution starts does not roll back or cancel it. The existing per-App lock, FileManager move/trash delegation, partial-failure report and deliberate fresh recovery remain unchanged.
+
+### Persisted evidence
+
+`tests/displayed-plan.test.mjs` bundles actual main, modal and merge together, so tests invoke rendered callbacks and the real per-App lock/algorithm. JSDOM supplies native buttons and Enter events; explicit host doubles supply Modal/FuzzySuggestModal, plugin lifecycle, vault objects/operations, notices and storage. Exact ordered create/move/trash arguments and full synthetic file-content/path inventories are asserted. Retained-callback cases deliberately invoke callbacks beyond normal DOM removal; they are not claims of real Escape/backdrop delivery or desktop modal coexistence.
+
+- Initial persisted suite at `6b6610bfcd9a5f6344f2cf3ea8f2df64c351b2c4`: **44 failures / 52 cases**, eight valid controls pass, before production edits. Output: `tests/evidence/displayed-plan-baseline.txt`.
+- Final expanded suite replay against the same exported source: **55 failures / 70 cases**, fifteen controls pass. Output: `tests/evidence/displayed-plan-baseline-replay.txt` (captured output trailing whitespace normalized).
+- Both baseline button and Enter traces display `Synthetic›Parent›Combined`, then move `MovedParent/A` to `MovedParent/Combined`, move the second note and trash the emptied second source. Close/cancel/unload retained callbacks also perform the merge. Traces record the preview, callback, operation arguments and final exact contents/paths before assertions fail.
+- Some baseline cases already reject in merge validation (deleted/replaced sources or routes); those fail the new stale-prompt feedback assertion, not a content-preservation assertion. A file newly occupying the target disables execution but previously leaves the obsolete prompt open. Do not interpret all baseline failures as mutations.
+- Candidate focused suite: **70/70 pass**. All stale/closed intent cases assert zero merge mutations and unchanged synthetic inventories. Controls cover selected/existing/new destinations, current inventory/content/collisions, mixed/all-Folder modes, external/new-root/vault-root/default/reset routes, deliberate name/depth changes, fresh review after drift/new occupancy, independent prompts, repeat callbacks during/after execution, per-App serialization and later failure followed by one-source-plus-existing-destination recovery.
+- Independent read-only source/test review found no blocking defect. Final `npm run qa`: **104/104 tests** (70 displayed-plan, 16 explorer, 12 merge, six recovery/report), TypeScript, production build and package checks. The one old deletion-report assertion now expects the explicit out-of-date message; all its no-mutation/report checks remain. No configured lint command. `git diff --check` passes; `main.js` rebuilt from final source. CSS, main/merge source, dependency/metadata/version files are unchanged.
+
+Replay without changing the candidate checkout:
+
+```sh
+baseline_dir=$(mktemp -d)
+for file in main.ts modal.ts merge.ts; do
+  git show "6b6610b:src/$file" > "$baseline_dir/$file"
+done
+FOLDER_MERGER_INTENT_SOURCE="$baseline_dir/main.ts" node --test tests/displayed-plan.test.mjs
+# Expected: exit 1, 15 pass and 55 fail.
+node --test tests/displayed-plan.test.mjs
+# Candidate: 70 pass.
+```
+
+The host double's inherited suggestion selection closes before choice delivery; the candidate's public override takes control of that ordering. This verifies our acceptance boundary, not the real host's event ordering, fuzzy matching, focus or keyboard navigation. Independent prompts are synthetic lifecycle tests, not observed desktop coexistence. Tests do not establish filesystem durability, crash safety, external-writer safety, live links/backlinks, minimum-version or popout compatibility.
+
+Still required in the existing isolated live environment: both confirmation paths after ancestor/source/target/route changes; cancellation/Escape/backdrop and unload; suggestion selection/cancellation with mouse and keyboard; fresh review and independent windows where supported; all prior explorer and minimum-1.8.7/current-version checks. The partial-failure section above remains the sole blocked recovery/link protocol. No duplicate app-access attempt, new fixture installation, personal-vault installation, push, tag, release or submission occurred.

@@ -1,0 +1,1283 @@
+Baseline: 6b6610bfcd9a5f6344f2cf3ea8f2df64c351b2c4; before production edits
+Command: node --test tests/displayed-plan.test.mjs
+Exit: 1; 52 cases, 8 pass, 44 fail.
+
+✔ button: unchanged displayed plan executes exact moves and preserves bytes (61.796916ms)
+✖ button: refuses ancestor rename before any merge mutation (8.437333ms)
+ℹ {"preview":{"destination":"Synthetic›Parent›Combined","inventory":"Notes (2) · click where one goes to send it somewhere elseone.md  A→ Combinedtwo.md  B→ Combined"},"invoked":"button","operations":[["move","MovedParent/A","MovedParent/Combined"],["move","MovedParent/B/two.md","MovedParent/Combined/two.md"],["trash","MovedParent/B"]],"final":{"MovedParent/Combined/one.md":"bytes:Parent/A/one.md","MovedParent/Combined/two.md":"bytes:Parent/B/two.md"}}
+✖ button: refuses ancestor move before any merge mutation (6.609375ms)
+✖ button: refuses source rename before any merge mutation (6.487083ms)
+✖ button: refuses source replacement before any merge mutation (6.521917ms)
+✖ button: refuses source deletion before any merge mutation (5.866791ms)
+✖ button: refuses target appears before any merge mutation (5.687042ms)
+✖ button: refuses target file appears before any merge mutation (5.49825ms)
+✖ button: refuses target replacement before any merge mutation (5.922833ms)
+✖ button: refuses target deletion before any merge mutation (5.989416ms)
+✖ button: refuses parent replacement before any merge mutation (5.792584ms)
+✖ button: refuses routed file rename before any merge mutation (7.144583ms)
+✖ button: refuses routed file replacement before any merge mutation (5.22125ms)
+✖ button: refuses route destination rename before any merge mutation (5.891875ms)
+✖ button: refuses route destination replacement before any merge mutation (5.096875ms)
+✖ button: refuses route destination deletion before any merge mutation (5.14575ms)
+✖ button: explicit retained callback after cancel is powerless (5.653084ms)
+ℹ {"preview":"Synthetic›Parent›Combined","invoked":"retained button after cancel","operations":[["move","Parent/A","Parent/Combined"],["move","Parent/B/two.md","Parent/Combined/two.md"],["trash","Parent/B"]],"final":{"Parent/Combined/one.md":"bytes:Parent/A/one.md","Parent/Combined/two.md":"bytes:Parent/B/two.md"}}
+✖ button: explicit retained callback after external close is powerless (6.278083ms)
+ℹ {"preview":"Synthetic›Parent›Combined","invoked":"retained button after external close","operations":[["move","Parent/A","Parent/Combined"],["move","Parent/B/two.md","Parent/Combined/two.md"],["trash","Parent/B"]],"final":{"Parent/Combined/one.md":"bytes:Parent/A/one.md","Parent/Combined/two.md":"bytes:Parent/B/two.md"}}
+✖ button: explicit retained callback after plugin unload is powerless (4.329125ms)
+ℹ {"preview":"Synthetic›Parent›Combined","invoked":"retained button after plugin unload","operations":[["move","Parent/A","Parent/Combined"],["move","Parent/B/two.md","Parent/Combined/two.md"],["trash","Parent/B"]],"final":{"Parent/Combined/one.md":"bytes:Parent/A/one.md","Parent/Combined/two.md":"bytes:Parent/B/two.md"}}
+✔ Enter: unchanged displayed plan executes exact moves and preserves bytes (4.749917ms)
+✖ Enter: refuses ancestor rename before any merge mutation (8.158833ms)
+ℹ {"preview":{"destination":"Synthetic›Parent›Combined","inventory":"Notes (2) · click where one goes to send it somewhere elseone.md  A→ Combinedtwo.md  B→ Combined"},"invoked":"Enter","operations":[["move","MovedParent/A","MovedParent/Combined"],["move","MovedParent/B/two.md","MovedParent/Combined/two.md"],["trash","MovedParent/B"]],"final":{"MovedParent/Combined/one.md":"bytes:Parent/A/one.md","MovedParent/Combined/two.md":"bytes:Parent/B/two.md"}}
+✖ Enter: refuses ancestor move before any merge mutation (5.338667ms)
+✖ Enter: refuses source rename before any merge mutation (4.884334ms)
+✖ Enter: refuses source replacement before any merge mutation (4.638292ms)
+✖ Enter: refuses source deletion before any merge mutation (5.529625ms)
+✖ Enter: refuses target appears before any merge mutation (7.934042ms)
+✖ Enter: refuses target file appears before any merge mutation (7.670667ms)
+✖ Enter: refuses target replacement before any merge mutation (5.08ms)
+✖ Enter: refuses target deletion before any merge mutation (4.714ms)
+✖ Enter: refuses parent replacement before any merge mutation (4.507917ms)
+✖ Enter: refuses routed file rename before any merge mutation (6.989833ms)
+✖ Enter: refuses routed file replacement before any merge mutation (5.891375ms)
+✖ Enter: refuses route destination rename before any merge mutation (4.961625ms)
+✖ Enter: refuses route destination replacement before any merge mutation (4.772209ms)
+✖ Enter: refuses route destination deletion before any merge mutation (4.8435ms)
+✖ Enter: explicit retained callback after cancel is powerless (4.11125ms)
+ℹ {"preview":"Synthetic›Parent›Combined","invoked":"retained Enter after cancel","operations":[["move","Parent/A","Parent/Combined"],["move","Parent/B/two.md","Parent/Combined/two.md"],["trash","Parent/B"]],"final":{"Parent/Combined/one.md":"bytes:Parent/A/one.md","Parent/Combined/two.md":"bytes:Parent/B/two.md"}}
+✖ Enter: explicit retained callback after external close is powerless (4.423042ms)
+ℹ {"preview":"Synthetic›Parent›Combined","invoked":"retained Enter after external close","operations":[["move","Parent/A","Parent/Combined"],["move","Parent/B/two.md","Parent/Combined/two.md"],["trash","Parent/B"]],"final":{"Parent/Combined/one.md":"bytes:Parent/A/one.md","Parent/Combined/two.md":"bytes:Parent/B/two.md"}}
+✖ Enter: explicit retained callback after plugin unload is powerless (5.316416ms)
+ℹ {"preview":"Synthetic›Parent›Combined","invoked":"retained Enter after plugin unload","operations":[["move","Parent/A","Parent/Combined"],["move","Parent/B/two.md","Parent/Combined/two.md"],["trash","Parent/B"]],"final":{"Parent/Combined/one.md":"bytes:Parent/A/one.md","Parent/Combined/two.md":"bytes:Parent/B/two.md"}}
+✖ fresh deliberate prompt after stale rejection executes reviewed destination (5.066334ms)
+✔ current un-routed inventory/content and current collisions are allowed (5.051875ms)
+✔ reviewed Folder choices, external and root routes execute exact effects (7.033042ms)
+✔ independent retained prompts: closing one does not invalidate another (5.43975ms)
+✔ independent retained prompts: consuming one leaves a disjoint plan valid (5.937875ms)
+✖ obsolete route choice: parent closed (7.556ms)
+✖ obsolete route choice: parent changed (5.129417ms)
+✖ obsolete route choice: file moved (4.930833ms)
+✖ obsolete route choice: destination moved (6.050333ms)
+✖ obsolete route choice: suggestion cancelled (5.491792ms)
+✖ obsolete route choice: older row callback (5.26375ms)
+✖ obsolete route choice: older suggestion (5.269458ms)
+✔ repeat confirmation and close after execution begins do not restart or roll back (5.211666ms)
+✔ per-App lock through real modals rejects another valid plan; fresh recovery works (7.786709ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 8
+ℹ fail 44
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 559.835083
+
+✖ failing tests:
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses ancestor rename before any merge mutation (8.437333ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'MovedParent/A',
+  +     'MovedParent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'MovedParent/B/two.md',
+  +     'MovedParent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'MovedParent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'MovedParent/A', 'MovedParent/Combined' ], [ 'move', 'MovedParent/B/two.md', 'MovedParent/Combined/two.md' ], [ 'trash', 'MovedParent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses ancestor move before any merge mutation (6.609375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Elsewhere/Parent/A',
+  +     'Elsewhere/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Elsewhere/Parent/B/two.md',
+  +     'Elsewhere/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Elsewhere/Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Elsewhere/Parent/A', 'Elsewhere/Combined' ], [ 'move', 'Elsewhere/Parent/B/two.md', 'Elsewhere/Combined/two.md' ], [ 'trash', 'Elsewhere/Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses source rename before any merge mutation (6.487083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/Renamed',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/Renamed', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses source replacement before any merge mutation (6.521917ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A selected folder no longer exists. Reopen the merge window.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A selected folder no longer exists. Reopen the merge window.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses source deletion before any merge mutation (5.866791ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A selected folder no longer exists. Reopen the merge window.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A selected folder no longer exists. Reopen the merge window.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses target appears before any merge mutation (5.687042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A/one.md',
+  +     'Parent/Combined/one.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/A'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A/one.md', 'Parent/Combined/one.md' ], [ 'trash', 'Parent/A' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses target file appears before any merge mutation (5.49825ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses target replacement before any merge mutation (5.922833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A/one.md',
+  +     'Parent/Combined/one.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/A'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A/one.md', 'Parent/Combined/one.md' ], [ 'trash', 'Parent/A' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses target deletion before any merge mutation (5.989416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses parent replacement before any merge mutation (5.792584ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses routed file rename before any merge mutation (7.144583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A/renamed.md',
+  +     'Outside/renamed.md'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A/renamed.md', 'Outside/renamed.md' ], [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses routed file replacement before any merge mutation (5.22125ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A routed file has moved. Reopen the merge window.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A routed file has moved. Reopen the merge window.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses route destination rename before any merge mutation (5.891875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A/one.md',
+  +     'Elsewhere/one.md'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A/one.md', 'Elsewhere/one.md' ], [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses route destination replacement before any merge mutation (5.096875ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A route destination is no longer available.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A route destination is no longer available.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ button: refuses route destination deletion before any merge mutation (5.14575ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A route destination is no longer available.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A route destination is no longer available.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:166:5
+✖ button: explicit retained callback after cancel is powerless (5.653084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:174:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:166:5
+✖ button: explicit retained callback after external close is powerless (6.278083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:174:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:166:5
+✖ button: explicit retained callback after plugin unload is powerless (4.329125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:174:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses ancestor rename before any merge mutation (8.158833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'MovedParent/A',
+  +     'MovedParent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'MovedParent/B/two.md',
+  +     'MovedParent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'MovedParent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'MovedParent/A', 'MovedParent/Combined' ], [ 'move', 'MovedParent/B/two.md', 'MovedParent/Combined/two.md' ], [ 'trash', 'MovedParent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses ancestor move before any merge mutation (5.338667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Elsewhere/Parent/A',
+  +     'Elsewhere/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Elsewhere/Parent/B/two.md',
+  +     'Elsewhere/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Elsewhere/Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Elsewhere/Parent/A', 'Elsewhere/Combined' ], [ 'move', 'Elsewhere/Parent/B/two.md', 'Elsewhere/Combined/two.md' ], [ 'trash', 'Elsewhere/Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses source rename before any merge mutation (4.884334ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/Renamed',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/Renamed', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses source replacement before any merge mutation (4.638292ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A selected folder no longer exists. Reopen the merge window.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A selected folder no longer exists. Reopen the merge window.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses source deletion before any merge mutation (5.529625ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A selected folder no longer exists. Reopen the merge window.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A selected folder no longer exists. Reopen the merge window.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses target appears before any merge mutation (7.934042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A/one.md',
+  +     'Parent/Combined/one.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/A'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A/one.md', 'Parent/Combined/one.md' ], [ 'trash', 'Parent/A' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses target file appears before any merge mutation (7.670667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses target replacement before any merge mutation (5.08ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A/one.md',
+  +     'Parent/Combined/one.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/A'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A/one.md', 'Parent/Combined/one.md' ], [ 'trash', 'Parent/A' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses target deletion before any merge mutation (4.714ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses parent replacement before any merge mutation (4.507917ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses routed file rename before any merge mutation (6.989833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A/renamed.md',
+  +     'Outside/renamed.md'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A/renamed.md', 'Outside/renamed.md' ], [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses routed file replacement before any merge mutation (5.891375ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A routed file has moved. Reopen the merge window.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A routed file has moved. Reopen the merge window.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses route destination rename before any merge mutation (4.961625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A/one.md',
+  +     'Elsewhere/one.md'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:161:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A/one.md', 'Elsewhere/one.md' ], [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses route destination replacement before any merge mutation (4.772209ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A route destination is no longer available.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A route destination is no longer available.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:134:5
+✖ Enter: refuses route destination deletion before any merge mutation (4.8435ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /out of date.*[Rr]eopen/. Input:
+
+  'Merge did not start: A route destination is no longer available.. Reopen the merge window and review the current paths.'
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:162:45)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Merge did not start: A route destination is no longer available.. Reopen the merge window and review the current paths.',
+    expected: /out of date.*[Rr]eopen/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:166:5
+✖ Enter: explicit retained callback after cancel is powerless (4.11125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:174:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:166:5
+✖ Enter: explicit retained callback after external close is powerless (4.423042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:174:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:166:5
+✖ Enter: explicit retained callback after plugin unload is powerless (5.316416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'Parent/A',
+  +     'Parent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'Parent/B/two.md',
+  +     'Parent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'Parent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:174:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'Parent/A', 'Parent/Combined' ], [ 'move', 'Parent/B/two.md', 'Parent/Combined/two.md' ], [ 'trash', 'Parent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:179:1
+✖ fresh deliberate prompt after stale rejection executes reviewed destination (5.066334ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'move',
+  +     'MovedParent/A',
+  +     'MovedParent/Combined'
+  +   ],
+  +   [
+  +     'move',
+  +     'MovedParent/B/two.md',
+  +     'MovedParent/Combined/two.md'
+  +   ],
+  +   [
+  +     'trash',
+  +     'MovedParent/B'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:181:30)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'move', 'MovedParent/A', 'MovedParent/Combined' ], [ 'move', 'MovedParent/B/two.md', 'MovedParent/Combined/two.md' ], [ 'trash', 'MovedParent/B' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:220:3
+✖ obsolete route choice: parent closed (7.556ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:233:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:220:3
+✖ obsolete route choice: parent changed (5.129417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:233:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:220:3
+✖ obsolete route choice: file moved (4.930833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:233:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:220:3
+✖ obsolete route choice: destination moved (6.050333ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:233:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:220:3
+✖ obsolete route choice: suggestion cancelled (5.491792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:233:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:220:3
+✖ obsolete route choice: older row callback (5.26375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 1
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:234:50)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/displayed-plan.test.mjs:220:3
+✖ obsolete route choice: older suggestion (5.269458ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///Users/maxogalactic/side-projects/obsidian-folder-merger/tests/displayed-plan.test.mjs:233:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

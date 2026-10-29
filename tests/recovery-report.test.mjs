@@ -178,7 +178,7 @@ test('stale selection validation uses did-not-start Notice without inventing a p
   assert.equal(modal.opened, false);
   assert(!v.app.openModals.some((entry) => entry instanceof RecoveryModal));
   assert.equal(notices.length, 1);
-  assert.match(notices[0].message, /Merge did not start:.*selected folder no longer exists/);
+  assert.match(notices[0].message, /Merge did not start:.*displayed plan is out of date/);
   assert.match(notices[0].message, /review the current paths/);
   assert(v.entries.has('A/first.md'), 'validation leaves the original files unmoved');
   assert(!v.entries.has('Combined'));

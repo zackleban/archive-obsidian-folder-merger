@@ -34,6 +34,10 @@ The manifest declares Obsidian **1.8.7 or newer** on desktop. This API floor cov
 
 The button follows current connected explorer toolbars when layout changes are delivered. Retired buttons lose their click handlers and are removed; disabling removes owned buttons and closes owned merge windows. Sixteen actual-source JSDOM tests verify detach/reattach, toolbar replacement, surviving panes, fresh enable and stale callbacks through a controlled modal-open boundary. They establish DOM ownership and click dispatch, not real Obsidian rendering or popout compatibility. See the [local evidence and remaining live checks](SUBMISSION.md#explorer-button-ownership--2026-10-29).
 
+Confirmation checks the displayed source identities and full paths, Folder/Notes choices, destination parent and existing/absent destination, and explicitly routed files/folders. If those change, the attempt closes without moving, creating or trashing anything; reopen and review a fresh plan. Cancel, close and plugin unload retire that prompt, and each prompt can start at most once. Old route suggestions cannot change a newer preview. A changed suggestion destination must be chosen again.
+
+The file list and count are a preview, **not a frozen inventory**: ordinary additions, removals, renames and content edits inside the selected folders are taken from current vault state when the merge runs. Explicit routes require the same file and destination at their displayed paths; edits to routed file contents are allowed. Existing destination contents can change and collision suffixes are assigned as moves run. Validation happens before execution, not throughout asynchronous operations; it does not lock out sync or other writers. See the [displayed-plan evidence and limits](SUBMISSION.md#displayed-plan-and-prompt-lifetime--2026-10-29).
+
 The destination preview shows intended folders; collision suffixes are assigned as moves run. Keep a backup before reorganizing a large vault: a merge is a sequence of moves, **not an atomic or undoable transaction**. Empty folders go through Obsidian's configured trash behavior. Closing the window after starting does not cancel an in-progress merge.
 
 ### If a merge stops
@@ -75,4 +79,4 @@ Works locally with vault files. No network requests, telemetry, accounts, or pai
 
 ## Development and submission
 
-Use Node.js 20 or newer. `npm run qa` type-checks and builds the production bundle, runs merge/recovery tests against host doubles and explorer lifecycle tests in JSDOM, and validates metadata, licenses, and authored-source safety. JSDOM is development-only and is not included in the plugin bundle. `npm run dev` watches TypeScript changes. See [SUBMISSION.md](SUBMISSION.md) for packaging and the remaining manual smoke checks.
+Use Node.js 20 or newer. `npm run qa` type-checks and builds the production bundle, runs merge/recovery tests against host doubles and explorer/modal action tests in JSDOM, and validates metadata, licenses, and authored-source safety. JSDOM is development-only and is not included in the plugin bundle. `npm run dev` watches TypeScript changes. See [SUBMISSION.md](SUBMISSION.md) for packaging and the remaining manual smoke checks.

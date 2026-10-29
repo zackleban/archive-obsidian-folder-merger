@@ -194,6 +194,7 @@ function freeName(app, target, file) {
 }
 
 // src/modal.ts
+var location = (item) => ({ item, path: item.path });
 var FULL_KEY = "folder-merger-full";
 var MergeModal = class extends import_obsidian2.Modal {
   constructor(app, start) {
@@ -207,9 +208,16 @@ var MergeModal = class extends import_obsidian2.Modal {
     // Notes sent somewhere by hand: a folder, or null for the top of the new folder.
     this.routes = /* @__PURE__ */ new Map();
     this.merging = false;
+    this.active = false;
+    this.retired = false;
+    this.revision = 0;
+    this.displayed = null;
+    this.suggestion = null;
     this.picked = [...new Set(start)].filter((f) => !f.isRoot() && !start.some((o) => o !== f && inside(f, o)));
   }
   onOpen() {
+    if (this.retired) return;
+    this.active = true;
     this.modalEl.addClass("folder-merger-modal");
     this.titleEl.setText("Merge folders");
     const { contentEl } = this;
@@ -270,6 +278,11 @@ var MergeModal = class extends import_obsidian2.Modal {
     search.focus();
   }
   onClose() {
+    this.active = false;
+    this.retired = true;
+    this.displayed = null;
+    this.suggestion?.close();
+    this.suggestion = null;
     this.contentEl.empty();
   }
   // The folders the arrows walk through: the top of the vault down to the first ticked folder's parent.
@@ -307,7 +320,6 @@ var MergeModal = class extends import_obsidian2.Modal {
     this.renderPlace();
   }
   refresh() {
-    this.renderList();
     this.renderPlace();
   }
   renderList() {
@@ -342,7 +354,7 @@ var MergeModal = class extends import_obsidian2.Modal {
     box.addEventListener("change", () => this.toggle(folder));
     (0, import_obsidian2.setIcon)(row.createSpan({ cls: "folder-merger-icon" }), "folder");
     const label = row.createSpan({ cls: "folder-merger-name", text: folder.name });
-    if (this.query && folder.parent && !folder.parent.isRoot()) {
+    if ((this.query || order >= 0) && folder.parent && !folder.parent.isRoot()) {
       label.createSpan({ cls: "folder-merger-parent", text: `  ${folder.parent.path}` });
     }
     row.createSpan({ cls: "folder-merger-count", text: String(countIn(folder).files) });
@@ -382,6 +394,11 @@ var MergeModal = class extends import_obsidian2.Modal {
     return null;
   }
   renderPlace() {
+    if (!this.active || this.merging) return;
+    this.revision++;
+    this.suggestion?.close();
+    this.suggestion = null;
+    this.renderList();
     const chain = this.place();
     this.topEl.disabled = this.outEl.disabled = this.depth <= 0;
     this.inEl.disabled = this.depth >= chain.length - 1;
@@ -408,11 +425,18 @@ var MergeModal = class extends import_obsidian2.Modal {
       const into = !(there instanceof import_obsidian2.TFolder) ? "into one new folder" : this.picked.includes(there) ? `into ${there.name}` : `into the ${there.name} folder already there`;
       const routed = this.routes.size ? ` ${this.routes.size} routed by hand.` : "";
       this.noteEl.setText(
-        `${files} file${files === 1 ? "" : "s"} from ${this.picked.length} folders go ${into}.${routed} Same names keep both (the second gets a number). Link updates follow your Obsidian preference. Emptied folders go to the trash.`
+        `${files} file${files === 1 ? "" : "s"} from ${this.picked.length} folders go ${into}.${routed} File inventory is a preview; current contents move at confirmation. Same names keep both (the second gets a number). Link updates follow your Obsidian preference. Emptied folders go to the trash.`
       );
     }
     this.mergeEl.setText(this.picked.length >= 2 ? `Merge ${this.picked.length} folders` : "Merge");
     this.mergeEl.disabled = problem !== null;
+    this.displayed = problem ? null : {
+      plan: { path: this.target(), kinds: new Map(this.picked.map((f) => [f, kindOf({ kinds: this.kinds }, f)])), routes: new Map(this.routes) },
+      sources: this.picked.map(location),
+      parent: location(chain[Math.min(this.depth, chain.length - 1)]),
+      existing: this.app.vault.getAbstractFileByPath(this.target()),
+      routes: [...this.routes].map(([file, to]) => ({ file: location(file), to: to ? location(to) : null }))
+    };
   }
   // Every note in the ticked folders, with where it goes. Click the destination to send it somewhere else.
   renderRoutes() {
@@ -434,18 +458,34 @@ var MergeModal = class extends import_obsidian2.Modal {
       const routed = this.routes.has(file);
       const to = row.createEl("button", { cls: "folder-merger-dest", text: `\u2192 ${this.destination(source, file)}` });
       to.toggleClass("is-routed", routed);
-      to.addEventListener(
-        "click",
-        () => new RouteSuggest(this.app, this.name.trim() || "the new folder", this.picked, (choice) => {
+      const revision = this.revision;
+      const shownFile = location(file);
+      const current = () => this.active && !this.merging && revision === this.revision;
+      to.addEventListener("click", () => {
+        if (!current()) return;
+        if (!this.intentCurrent() || !this.live(shownFile)) {
+          this.outdated();
+          return;
+        }
+        this.suggestion?.close();
+        const suggestion = new RouteSuggest(this.app, this.name.trim() || "the new folder", [...this.picked], (choice) => {
+          if (!current() || this.suggestion !== suggestion) return;
+          if (!this.intentCurrent() || !this.live(shownFile)) {
+            this.outdated();
+            return;
+          }
           if (choice === void 0) this.routes.delete(file);
           else this.routes.set(file, choice);
           this.renderPlace();
-        }).open()
-      );
+        });
+        this.suggestion = suggestion;
+        suggestion.open();
+      });
       if (routed) {
         const reset = row.createEl("button", { cls: "folder-merger-reset clickable-icon", attr: { "aria-label": "Back to where the merge puts it" } });
         (0, import_obsidian2.setIcon)(reset, "x");
         reset.addEventListener("click", () => {
+          if (!current()) return;
           this.routes.delete(file);
           this.renderPlace();
         });
@@ -466,12 +506,33 @@ var MergeModal = class extends import_obsidian2.Modal {
   label(folder) {
     return folder.isRoot() ? this.app.vault.getName() : folder.name;
   }
+  live(value) {
+    return value.item.path === value.path && this.app.vault.getAbstractFileByPath(value.path) === value.item;
+  }
+  intentCurrent() {
+    const shown = this.displayed;
+    if (!shown || this.target() !== shown.plan.path || !this.live(shown.parent) || this.app.vault.getAbstractFileByPath(shown.plan.path) !== shown.existing || this.picked.length !== shown.sources.length || this.routes.size !== shown.routes.length) return false;
+    if (shown.sources.some((source, i) => source.item !== this.picked[i] || !this.live(source) || kindOf({ kinds: this.kinds }, source.item) !== shown.plan.kinds.get(source.item))) return false;
+    return shown.routes.every(({ file, to }) => this.live(file) && this.routes.has(file.item) && this.routes.get(file.item) === (to?.item ?? null) && (!to || this.live(to)));
+  }
+  outdated() {
+    this.close();
+    new import_obsidian2.Notice("Merge did not start: the displayed plan is out of date. Reopen the merge window and review the current paths.", 12e3);
+  }
   async merge() {
-    if (this.merging || this.problem()) return;
+    if (!this.active || this.merging) return;
+    if (!this.intentCurrent()) {
+      this.outdated();
+      return;
+    }
+    if (this.problem()) return;
+    const shown = this.displayed;
     this.merging = true;
-    const path = this.target();
-    const picked = [...this.picked];
-    const plan = { path, kinds: new Map(this.kinds), routes: new Map(this.routes) };
+    this.active = false;
+    this.suggestion?.close();
+    this.suggestion = null;
+    const picked = shown.sources.map((source) => source.item);
+    const plan = shown.plan;
     this.modalEl.querySelectorAll("input, button").forEach((el) => el.disabled = true);
     this.mergeEl.setText("Merging\u2026");
     try {
@@ -514,20 +575,49 @@ var RouteSuggest = class extends import_obsidian2.FuzzySuggestModal {
     this.newName = newName;
     this.picked = picked;
     this.chosen = chosen;
+    this.active = false;
+    this.retired = false;
+    this.offered = /* @__PURE__ */ new Set();
     this.setPlaceholder("Send this note to\u2026");
+  }
+  onOpen() {
+    if (this.retired) return;
+    this.active = true;
+    super.onOpen();
+  }
+  onClose() {
+    this.active = false;
+    this.retired = true;
+    this.offered.clear();
+    super.onClose();
+  }
+  // Own the public selection boundary: do not depend on whether the host's
+  // inherited selectSuggestion closes before or after onChooseItem.
+  selectSuggestion(value, _evt) {
+    this.onChooseItem(value.item);
+    this.close();
   }
   getItems() {
     const folders = this.app.vault.getAllLoadedFiles().filter((f) => f instanceof import_obsidian2.TFolder).filter((f) => !this.picked.some((p) => f === p || inside(f, p))).sort((a, b) => a.path.localeCompare(b.path, void 0, { numeric: true, sensitivity: "base" }));
-    return [
+    const items = [
       { text: "Where the merge puts it", to: void 0 },
       { text: `Top of ${this.newName} (the new folder)`, to: null },
-      ...folders.map((f) => ({ text: f.isRoot() ? `${this.app.vault.getName()} (top of the vault)` : f.path, to: f }))
+      ...folders.map((f) => ({ text: f.isRoot() ? `${this.app.vault.getName()} (top of the vault)` : f.path, to: f, path: f.path }))
     ];
+    this.offered = new Set(items);
+    return items;
   }
   getItemText(item) {
     return item.text;
   }
   onChooseItem(item) {
+    if (!this.active || !this.offered.has(item)) return;
+    this.active = false;
+    if (item.to && (item.to.path !== item.path || this.app.vault.getAbstractFileByPath(item.path) !== item.to)) {
+      this.close();
+      new import_obsidian2.Notice("Route choice is out of date. Choose the destination again.");
+      return;
+    }
     this.chosen(item.to);
   }
 };
