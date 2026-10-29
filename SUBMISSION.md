@@ -1,6 +1,6 @@
 # Submission preparation
 
-Latest local checkpoint: [Displayed plan and prompt lifetime — 2026-10-29](#displayed-plan-and-prompt-lifetime--2026-10-29). Earlier entries below remain dated history.
+Latest local checkpoint: [Confirmation and ownership REVIEW — 2026-10-29](#confirmation-and-ownership-review--2026-10-29). Earlier entries below remain dated history.
 
 Local preparation only. No tag, release, upload, directory submission, or remote change is made by these scripts.
 
@@ -265,3 +265,15 @@ node --test tests/displayed-plan.test.mjs
 The host double's inherited suggestion selection closes before choice delivery; the candidate's public override takes control of that ordering. This verifies our acceptance boundary, not the real host's event ordering, fuzzy matching, focus or keyboard navigation. Independent prompts are synthetic lifecycle tests, not observed desktop coexistence. Tests do not establish filesystem durability, crash safety, external-writer safety, live links/backlinks, minimum-version or popout compatibility.
 
 Still required in the existing isolated live environment: both confirmation paths after ancestor/source/target/route changes; cancellation/Escape/backdrop and unload; suggestion selection/cancellation with mouse and keyboard; fresh review and independent windows where supported; all prior explorer and minimum-1.8.7/current-version checks. The partial-failure section above remains the sole blocked recovery/link protocol. No duplicate app-access attempt, new fixture installation, personal-vault installation, push, tag, release or submission occurred.
+
+## Confirmation and ownership REVIEW — 2026-10-29
+
+agent decision 2026-10-28: accept only the bounded local REVIEW after independent source/contract review, fresh checks and local commits; keep existing live/community gates open because local evidence cannot establish them.
+
+Reviewed `6b6610b` → `f17dcd6` with independent read-only source/test/API review. Captured source/destination/parent identity and paths, destination occupancy, modes and explicit routes are validated without recapture and dispatched as the displayed plan. Button/Enter lifetime, suggestion revisions and exact offered-item membership compose with close/cancel/unload. Public `selectSuggestion(FuzzyMatch<T>, event)` matches installed declarations and explicitly accepts before closing. The unchanged merge synchronously validates/acquires its per-App lock before its first await. No new defect found. Current unrouted inventory/content/collisions, routed content edits and deliberate fresh recovery remain intact; contents are not frozen, later operations are not atomic and closure after dispatch cannot cancel them.
+
+Fresh `npm run qa` passed **104/104 tests**, TypeScript, production build and package checks. No lint task is configured. Each of the seven QA commands ran once for this REVIEW; the fresh aggregate is **543 standalone tests plus 12 shared cases**. Five new graph cases account for the increase from the historical 538-plus-12 intake arithmetic. No final QA failed.
+
+README installation/development instructions, manifest/package/lock/root-lock/version agreement, desktop flags, dependency classification, licenses/notices and assets were checked against source/build configuration. Current official [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin%20guidelines), [developer policies](https://docs.obsidian.md/community-directory/developer-policies), [submission requirements](https://docs.obsidian.md/community-directory/submission-requirements-for-plugins), [manifest](https://docs.obsidian.md/Reference/Manifest) and [submission instructions](https://docs.obsidian.md/Plugins/Releasing/Submit%20your%20plugin) were rechecked. Local consistency does not establish minimum-version compatibility, directory availability, hosted-review success or community approval.
+
+Production assets are byte-identical to this REVIEW's starting candidate. Diff checks pass. Existing readiness/live protocols remain their sole homes, including explorer/modal/WebGL/xterm, popout, mobile where advertised, Linux and minimum versions as applicable. The three older live sorting/recovery deliverables remain blocked. No app-access retry, personal-vault installation, push, tag, release or submission occurred.
