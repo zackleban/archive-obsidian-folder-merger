@@ -1,8 +1,7 @@
 import { App, FuzzySuggestModal, Modal, Notice, TFile, TFolder, normalizePath, setIcon } from "obsidian";
-import { Kind, countIn, inside, join, kindOf, mergeFolders } from "./merge";
+import { Kind, countIn, inside, join, kindOf, mergeFolders, validFolderName } from "./merge";
 
 const FULL_KEY = "folder-merger-full";
-const BAD_NAME = /[\\/:*?"<>|#^[\]]/;
 
 // Tick folders, name the new one, step it in or out with the arrows, then merge.
 export class MergeModal extends Modal {
@@ -16,6 +15,7 @@ export class MergeModal extends Modal {
 	private kinds = new Map<TFolder, Kind>();
 	// Notes sent somewhere by hand: a folder, or null for the top of the new folder.
 	private routes = new Map<TFile, TFolder | null>();
+	private merging = false;
 
 	private listEl!: HTMLElement;
 	private nameInput!: HTMLInputElement;
@@ -30,7 +30,7 @@ export class MergeModal extends Modal {
 
 	constructor(app: App, start: TFolder[]) {
 		super(app);
-		this.picked = start.filter((f, i) => !start.some((o, j) => j !== i && inside(f, o)));
+		this.picked = [...new Set(start)].filter((f) => !f.isRoot() && !start.some((o) => o !== f && inside(f, o)));
 	}
 
 	onOpen() {
@@ -39,7 +39,7 @@ export class MergeModal extends Modal {
 		const { contentEl } = this;
 
 		// Full screen puts the folders on the left and the rest on the right; remembered for next time.
-		const expand = this.modalEl.createDiv({ cls: "clickable-icon folder-merger-expand" });
+		const expand = this.modalEl.createEl("button", { cls: "clickable-icon folder-merger-expand" });
 		const setFull = (full: boolean) => {
 			this.modalEl.toggleClass("is-full", full);
 			setIcon(expand, full ? "minimize-2" : "maximize-2");
@@ -55,7 +55,7 @@ export class MergeModal extends Modal {
 
 		const search = left.createEl("input", {
 			cls: "folder-merger-search",
-			attr: { type: "search", placeholder: "Find a folder…" },
+			attr: { type: "search", placeholder: "Find a folder…", "aria-label": "Find a folder" },
 		});
 		search.addEventListener("input", () => {
 			this.query = search.value.trim().toLowerCase();
@@ -67,7 +67,7 @@ export class MergeModal extends Modal {
 
 		const nameRow = panel.createDiv({ cls: "folder-merger-field" });
 		nameRow.createSpan({ cls: "folder-merger-label", text: "Name" });
-		this.nameInput = nameRow.createEl("input", { attr: { type: "text", placeholder: "New folder name" } });
+		this.nameInput = nameRow.createEl("input", { attr: { type: "text", placeholder: "New folder name", "aria-label": "Destination folder name" } });
 		this.nameInput.addEventListener("input", () => {
 			this.name = this.nameInput.value;
 			this.nameTouched = true;
@@ -218,7 +218,8 @@ export class MergeModal extends Modal {
 	}
 
 	private target(): string {
-		return normalizePath(join(this.place()[this.depth], this.name.trim()));
+		const chain = this.place();
+		return normalizePath(join(chain[Math.min(this.depth, chain.length - 1)], this.name.trim()));
 	}
 
 	// Why the merge can't run yet, or null when it can.
@@ -226,7 +227,7 @@ export class MergeModal extends Modal {
 		const name = this.name.trim();
 		if (this.picked.length < 2) return "Tick two or more folders.";
 		if (!name) return "Give the new folder a name.";
-		if (BAD_NAME.test(name) || name.startsWith(".")) return "A folder name can't use \\ / : * ? \" < > | # ^ [ ] or start with a dot.";
+		if (!validFolderName(name)) return "Use a folder name without reserved names, special characters, or a leading or trailing dot.";
 		const there = this.app.vault.getAbstractFileByPath(this.target());
 		if (there instanceof TFile) return "A file already has that name here.";
 		if (there instanceof TFolder && this.picked.some((p) => inside(p, there))) {
@@ -332,18 +333,21 @@ export class MergeModal extends Modal {
 	}
 
 	private async merge() {
-		if (this.problem()) return;
+		if (this.merging || this.problem()) return;
+		this.merging = true;
 		const path = this.target();
-		this.mergeEl.disabled = true;
+		const picked = [...this.picked];
+		const plan = { path, kinds: new Map(this.kinds), routes: new Map(this.routes) };
+		this.modalEl.querySelectorAll<HTMLInputElement | HTMLButtonElement>("input, button").forEach((el) => el.disabled = true);
 		this.mergeEl.setText("Merging…");
 		try {
-			const result = await mergeFolders(this.app, this.picked, { path, kinds: this.kinds, routes: this.routes });
+			const result = await mergeFolders(this.app, picked, plan);
 			const renamed = result.renamed ? `, ${result.renamed} renamed to keep both` : "";
 			new Notice(`Merged into ${result.target.path}${renamed}.`);
 			this.close();
 		} catch (e) {
 			console.error("Folder Merger", e);
-			new Notice(`Merge stopped: ${e instanceof Error ? e.message : e}. Whatever already moved is in ${path}.`);
+			new Notice(`Merge stopped: ${e instanceof Error ? e.message : e}. Completed moves remain in ${path} or their chosen route destinations. Check those folders before retrying.`, 12000);
 			this.close();
 		}
 	}

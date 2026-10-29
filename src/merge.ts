@@ -1,8 +1,8 @@
-// Moving folders into one. Nothing is lost: everything is moved with Obsidian's own rename (so links
-// keep working), same names get a number, and only folders left empty go to the trash.
-import { App, TAbstractFile, TFile, TFolder } from "obsidian";
+// Moves use Obsidian's file manager so its link-update preference is respected.
+// Same names get a number, and only folders left empty go to the trash.
+import { App, TAbstractFile, TFile, TFolder, normalizePath } from "obsidian";
 
-export const join = (parent: TFolder, name: string) => (parent.isRoot() ? name : `${parent.path}/${name}`);
+export const join = (parent: TFolder, name: string) => normalizePath(parent.isRoot() ? name : `${parent.path}/${name}`);
 
 // True when `folder` sits somewhere below `outer`.
 export const inside = (folder: TAbstractFile, outer: TFolder) =>
@@ -40,9 +40,52 @@ export interface MergePlan {
 
 export const kindOf = (plan: Pick<MergePlan, "kinds">, folder: TFolder): Kind => plan.kinds.get(folder) ?? "notes";
 
+export const validFolderName = (name: string): boolean => Boolean(name) && name === name.trim()
+	&& !/[\\/:*?"<>|#^[\]\x00-\x1f]/.test(name) && !name.startsWith(".") && !name.endsWith(".")
+	&& !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(name);
+
+// Validate the whole plan before the first move, including stale objects from an open modal.
+export function validatePlan(app: App, picked: TFolder[], plan: MergePlan): void {
+	const live = (file: TAbstractFile) => app.vault.getAbstractFileByPath(file.path) === file;
+	if (picked.length < 2 || new Set(picked).size !== picked.length) throw new Error("Choose at least two different folders.");
+	if (picked.some((f) => f.isRoot() || !live(f))) throw new Error("A selected folder no longer exists. Reopen the merge window.");
+	if (picked.some((f) => picked.some((other) => other !== f && inside(f, other)))) throw new Error("Selected folders cannot contain each other.");
+	const parts = plan.path.split("/");
+	if (normalizePath(plan.path) !== plan.path || parts.some((part) => !part || part === "." || part === "..") || !validFolderName(parts[parts.length - 1])) {
+		throw new Error("Choose a valid destination path.");
+	}
+	const parentPath = plan.path.includes("/") ? plan.path.slice(0, plan.path.lastIndexOf("/")) : "/";
+	const parent = app.vault.getAbstractFileByPath(parentPath);
+	if (!(parent instanceof TFolder)) throw new Error("The destination parent no longer exists.");
+	const existing = app.vault.getAbstractFileByPath(plan.path);
+	if (existing && !(existing instanceof TFolder)) throw new Error("A file already has the destination name.");
+	if (picked.some((f) => plan.path.startsWith(`${f.path}/`) || (existing instanceof TFolder && inside(f, existing)))) {
+		throw new Error("The destination cannot be inside a selected folder or contain one.");
+	}
+	for (const [file, to] of plan.routes) {
+		if (!live(file) || !picked.some((f) => inside(file, f))) throw new Error("A routed file has moved. Reopen the merge window.");
+		if (to && (!live(to) || picked.some((f) => to === f || inside(to, f)))) throw new Error("A route destination is no longer available.");
+	}
+}
+
 // Puts every ticked folder into plan.path. When a folder is already there, everything goes into it; otherwise
 // the first "notes" folder is moved and renamed to it, or a new folder is made when they are all "folder".
+const merging = new WeakSet<App>();
+
 export async function mergeFolders(app: App, picked: TFolder[], plan: MergePlan): Promise<MergeResult> {
+	if (merging.has(app)) throw new Error("Another folder merge is still running.");
+	const sources = [...picked];
+	const snapshot = { path: plan.path, kinds: new Map(plan.kinds), routes: new Map(plan.routes) };
+	validatePlan(app, sources, snapshot);
+	merging.add(app);
+	try {
+		return await executeMerge(app, sources, snapshot);
+	} finally {
+		merging.delete(app);
+	}
+}
+
+async function executeMerge(app: App, picked: TFolder[], plan: MergePlan): Promise<MergeResult> {
 	const result: MergeResult = { moved: 0, renamed: 0, target: picked[0] };
 	// Notes routed to folders that already exist leave first, so nothing else carries them along.
 	for (const [file, to] of plan.routes) if (to) await place(app, file, to, result);

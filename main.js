@@ -30,7 +30,7 @@ var import_obsidian2 = require("obsidian");
 
 // src/merge.ts
 var import_obsidian = require("obsidian");
-var join = (parent, name) => parent.isRoot() ? name : `${parent.path}/${name}`;
+var join = (parent, name) => (0, import_obsidian.normalizePath)(parent.isRoot() ? name : `${parent.path}/${name}`);
 var inside = (folder, outer) => outer.isRoot() ? !(folder instanceof import_obsidian.TFolder && folder.isRoot()) : folder.path.startsWith(`${outer.path}/`);
 function countIn(folder) {
   const sum = { files: 0, folders: 0 };
@@ -46,7 +46,43 @@ function countIn(folder) {
   return sum;
 }
 var kindOf = (plan, folder) => plan.kinds.get(folder) ?? "notes";
+var validFolderName = (name) => Boolean(name) && name === name.trim() && !/[\\/:*?"<>|#^[\]\x00-\x1f]/.test(name) && !name.startsWith(".") && !name.endsWith(".") && !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(name);
+function validatePlan(app, picked, plan) {
+  const live = (file) => app.vault.getAbstractFileByPath(file.path) === file;
+  if (picked.length < 2 || new Set(picked).size !== picked.length) throw new Error("Choose at least two different folders.");
+  if (picked.some((f) => f.isRoot() || !live(f))) throw new Error("A selected folder no longer exists. Reopen the merge window.");
+  if (picked.some((f) => picked.some((other) => other !== f && inside(f, other)))) throw new Error("Selected folders cannot contain each other.");
+  const parts = plan.path.split("/");
+  if ((0, import_obsidian.normalizePath)(plan.path) !== plan.path || parts.some((part) => !part || part === "." || part === "..") || !validFolderName(parts[parts.length - 1])) {
+    throw new Error("Choose a valid destination path.");
+  }
+  const parentPath = plan.path.includes("/") ? plan.path.slice(0, plan.path.lastIndexOf("/")) : "/";
+  const parent = app.vault.getAbstractFileByPath(parentPath);
+  if (!(parent instanceof import_obsidian.TFolder)) throw new Error("The destination parent no longer exists.");
+  const existing = app.vault.getAbstractFileByPath(plan.path);
+  if (existing && !(existing instanceof import_obsidian.TFolder)) throw new Error("A file already has the destination name.");
+  if (picked.some((f) => plan.path.startsWith(`${f.path}/`) || existing instanceof import_obsidian.TFolder && inside(f, existing))) {
+    throw new Error("The destination cannot be inside a selected folder or contain one.");
+  }
+  for (const [file, to] of plan.routes) {
+    if (!live(file) || !picked.some((f) => inside(file, f))) throw new Error("A routed file has moved. Reopen the merge window.");
+    if (to && (!live(to) || picked.some((f) => to === f || inside(to, f)))) throw new Error("A route destination is no longer available.");
+  }
+}
+var merging = /* @__PURE__ */ new WeakSet();
 async function mergeFolders(app, picked, plan) {
+  if (merging.has(app)) throw new Error("Another folder merge is still running.");
+  const sources = [...picked];
+  const snapshot = { path: plan.path, kinds: new Map(plan.kinds), routes: new Map(plan.routes) };
+  validatePlan(app, sources, snapshot);
+  merging.add(app);
+  try {
+    return await executeMerge(app, sources, snapshot);
+  } finally {
+    merging.delete(app);
+  }
+}
+async function executeMerge(app, picked, plan) {
   const result = { moved: 0, renamed: 0, target: picked[0] };
   for (const [file, to] of plan.routes) if (to) await place(app, file, to, result);
   const existing = app.vault.getAbstractFileByPath(plan.path);
@@ -95,7 +131,6 @@ function freeName(app, target, file) {
 
 // src/modal.ts
 var FULL_KEY = "folder-merger-full";
-var BAD_NAME = /[\\/:*?"<>|#^[\]]/;
 var MergeModal = class extends import_obsidian2.Modal {
   constructor(app, start) {
     super(app);
@@ -107,13 +142,14 @@ var MergeModal = class extends import_obsidian2.Modal {
     this.kinds = /* @__PURE__ */ new Map();
     // Notes sent somewhere by hand: a folder, or null for the top of the new folder.
     this.routes = /* @__PURE__ */ new Map();
-    this.picked = start.filter((f, i) => !start.some((o, j) => j !== i && inside(f, o)));
+    this.merging = false;
+    this.picked = [...new Set(start)].filter((f) => !f.isRoot() && !start.some((o) => o !== f && inside(f, o)));
   }
   onOpen() {
     this.modalEl.addClass("folder-merger-modal");
     this.titleEl.setText("Merge folders");
     const { contentEl } = this;
-    const expand = this.modalEl.createDiv({ cls: "clickable-icon folder-merger-expand" });
+    const expand = this.modalEl.createEl("button", { cls: "clickable-icon folder-merger-expand" });
     const setFull = (full) => {
       this.modalEl.toggleClass("is-full", full);
       (0, import_obsidian2.setIcon)(expand, full ? "minimize-2" : "maximize-2");
@@ -127,7 +163,7 @@ var MergeModal = class extends import_obsidian2.Modal {
     const right = sides.createDiv({ cls: "folder-merger-side" });
     const search = left.createEl("input", {
       cls: "folder-merger-search",
-      attr: { type: "search", placeholder: "Find a folder\u2026" }
+      attr: { type: "search", placeholder: "Find a folder\u2026", "aria-label": "Find a folder" }
     });
     search.addEventListener("input", () => {
       this.query = search.value.trim().toLowerCase();
@@ -137,7 +173,7 @@ var MergeModal = class extends import_obsidian2.Modal {
     const panel = right.createDiv({ cls: "folder-merger-panel" });
     const nameRow = panel.createDiv({ cls: "folder-merger-field" });
     nameRow.createSpan({ cls: "folder-merger-label", text: "Name" });
-    this.nameInput = nameRow.createEl("input", { attr: { type: "text", placeholder: "New folder name" } });
+    this.nameInput = nameRow.createEl("input", { attr: { type: "text", placeholder: "New folder name", "aria-label": "Destination folder name" } });
     this.nameInput.addEventListener("input", () => {
       this.name = this.nameInput.value;
       this.nameTouched = true;
@@ -265,14 +301,15 @@ var MergeModal = class extends import_obsidian2.Modal {
     }
   }
   target() {
-    return (0, import_obsidian2.normalizePath)(join(this.place()[this.depth], this.name.trim()));
+    const chain = this.place();
+    return (0, import_obsidian2.normalizePath)(join(chain[Math.min(this.depth, chain.length - 1)], this.name.trim()));
   }
   // Why the merge can't run yet, or null when it can.
   problem() {
     const name = this.name.trim();
     if (this.picked.length < 2) return "Tick two or more folders.";
     if (!name) return "Give the new folder a name.";
-    if (BAD_NAME.test(name) || name.startsWith(".")) return `A folder name can't use \\ / : * ? " < > | # ^ [ ] or start with a dot.`;
+    if (!validFolderName(name)) return "Use a folder name without reserved names, special characters, or a leading or trailing dot.";
     const there = this.app.vault.getAbstractFileByPath(this.target());
     if (there instanceof import_obsidian2.TFile) return "A file already has that name here.";
     if (there instanceof import_obsidian2.TFolder && this.picked.some((p) => inside(p, there))) {
@@ -366,18 +403,21 @@ var MergeModal = class extends import_obsidian2.Modal {
     return folder.isRoot() ? this.app.vault.getName() : folder.name;
   }
   async merge() {
-    if (this.problem()) return;
+    if (this.merging || this.problem()) return;
+    this.merging = true;
     const path = this.target();
-    this.mergeEl.disabled = true;
+    const picked = [...this.picked];
+    const plan = { path, kinds: new Map(this.kinds), routes: new Map(this.routes) };
+    this.modalEl.querySelectorAll("input, button").forEach((el) => el.disabled = true);
     this.mergeEl.setText("Merging\u2026");
     try {
-      const result = await mergeFolders(this.app, this.picked, { path, kinds: this.kinds, routes: this.routes });
+      const result = await mergeFolders(this.app, picked, plan);
       const renamed = result.renamed ? `, ${result.renamed} renamed to keep both` : "";
       new import_obsidian2.Notice(`Merged into ${result.target.path}${renamed}.`);
       this.close();
     } catch (e) {
       console.error("Folder Merger", e);
-      new import_obsidian2.Notice(`Merge stopped: ${e instanceof Error ? e.message : e}. Whatever already moved is in ${path}.`);
+      new import_obsidian2.Notice(`Merge stopped: ${e instanceof Error ? e.message : e}. Completed moves remain in ${path} or their chosen route destinations. Check those folders before retrying.`, 12e3);
       this.close();
     }
   }
@@ -412,6 +452,12 @@ var RouteSuggest = class extends import_obsidian2.FuzzySuggestModal {
 // src/main.ts
 var BUTTON_CLASS = "folder-merger-button";
 var FolderMergerPlugin = class extends import_obsidian3.Plugin {
+  constructor() {
+    super(...arguments);
+    this.buttons = /* @__PURE__ */ new Set();
+    this.modals = /* @__PURE__ */ new Set();
+    this.stopped = false;
+  }
   onload() {
     this.addCommand({ id: "open", name: "Merge folders", callback: () => this.open([]) });
     this.registerEvent(
@@ -435,20 +481,35 @@ var FolderMergerPlugin = class extends import_obsidian3.Plugin {
     this.registerEvent(this.app.workspace.on("layout-change", () => this.addButtons()));
   }
   onunload() {
-    document.querySelectorAll(`.${BUTTON_CLASS}`).forEach((el) => el.remove());
+    this.stopped = true;
+    this.buttons.forEach((el) => el.remove());
+    this.buttons.clear();
+    this.modals.forEach((modal) => modal.close());
+    this.modals.clear();
   }
   open(start) {
-    new MergeModal(this.app, start).open();
+    if (this.stopped) return;
+    const modal = new MergeModal(this.app, start);
+    const close = modal.onClose.bind(modal);
+    modal.onClose = () => {
+      close();
+      this.modals.delete(modal);
+    };
+    this.modals.add(modal);
+    modal.open();
   }
   addButtons() {
+    if (this.stopped) return;
+    for (const button of this.buttons) if (!button.isConnected) this.buttons.delete(button);
     for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
       const bar = leaf.view.containerEl.querySelector(".nav-buttons-container");
       if (!bar || bar.querySelector(`.${BUTTON_CLASS}`)) continue;
-      const button = bar.createDiv({
+      const button = bar.createEl("button", {
         cls: `clickable-icon nav-action-button ${BUTTON_CLASS}`,
         attr: { "aria-label": "Merge folders" }
       });
       (0, import_obsidian3.setIcon)(button, "folder");
+      this.buttons.add(button);
       button.addEventListener("click", () => this.open([]));
     }
   }

@@ -12,6 +12,7 @@ const context = await esbuild.context({
 		"@codemirror/*",
 		"@lezer/*",
 		...builtins,
+		"node:*",
 	],
 	format: "cjs",
 	target: "es2020",
@@ -23,7 +24,7 @@ const context = await esbuild.context({
 
 if (production) {
 	await context.rebuild();
-	process.exit(0);
+	await context.dispose();
 } else {
 	await context.watch();
 }

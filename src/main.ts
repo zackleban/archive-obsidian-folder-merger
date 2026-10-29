@@ -4,6 +4,9 @@ import { MergeModal } from "./modal";
 const BUTTON_CLASS = "folder-merger-button";
 
 export default class FolderMergerPlugin extends Plugin {
+	private buttons = new Set<HTMLElement>();
+	private modals = new Set<MergeModal>();
+	private stopped = false;
 	onload() {
 		this.addCommand({ id: "open", name: "Merge folders", callback: () => this.open([]) });
 
@@ -32,22 +35,34 @@ export default class FolderMergerPlugin extends Plugin {
 	}
 
 	onunload() {
-		document.querySelectorAll(`.${BUTTON_CLASS}`).forEach((el) => el.remove());
+		this.stopped = true;
+		this.buttons.forEach((el) => el.remove());
+		this.buttons.clear();
+		this.modals.forEach((modal) => modal.close());
+		this.modals.clear();
 	}
 
 	private open(start: TFolder[]) {
-		new MergeModal(this.app, start).open();
+		if (this.stopped) return;
+		const modal = new MergeModal(this.app, start);
+		const close = modal.onClose.bind(modal);
+		modal.onClose = () => { close(); this.modals.delete(modal); };
+		this.modals.add(modal);
+		modal.open();
 	}
 
 	private addButtons() {
+		if (this.stopped) return;
+		for (const button of this.buttons) if (!button.isConnected) this.buttons.delete(button);
 		for (const leaf of this.app.workspace.getLeavesOfType("file-explorer")) {
 			const bar = leaf.view.containerEl.querySelector(".nav-buttons-container");
 			if (!bar || bar.querySelector(`.${BUTTON_CLASS}`)) continue;
-			const button = bar.createDiv({
+			const button = bar.createEl("button", {
 				cls: `clickable-icon nav-action-button ${BUTTON_CLASS}`,
 				attr: { "aria-label": "Merge folders" },
 			});
 			setIcon(button, "folder");
+			this.buttons.add(button);
 			button.addEventListener("click", () => this.open([]));
 		}
 	}
